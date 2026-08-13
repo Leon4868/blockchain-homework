@@ -1,0 +1,10 @@
+type DataWritten @entity(immutable: true) {
+  id: Bytes!
+  writer: Bytes!
+  keyHash: Bytes!
+  key: String!
+  value: String!
+  timestamp: BigInt!
+  blockNumber: BigInt!
+  transactionHash: Bytes!
+}

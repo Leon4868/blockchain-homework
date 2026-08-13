@@ -1,0 +1,32 @@
+version: 1
+validation: sovereign
+default_denom: uedu
+accounts:
+- name: alice
+  coins:
+  - 300000000uedu
+- name: bob
+  coins:
+  - 200000000uedu
+- name: validator
+  coins:
+  - 1000000000uedu
+client:
+  openapi:
+    path: docs/static/openapi.json
+faucet:
+  name: bob
+  coins:
+  - 1000000uedu
+  coins_max:
+  - 10000000uedu
+  rate_limit_window: 86400
+genesis:
+  chain_id: edu
+validators:
+- name: validator
+  bonded: 500000000uedu
+  app:
+    minimum-gas-prices: 0uedu
+  config:
+    moniker: edu-validator

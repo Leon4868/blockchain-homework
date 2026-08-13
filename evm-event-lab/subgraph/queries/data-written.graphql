@@ -1,0 +1,16 @@
+query RecentDataWritten {
+  dataWrittens(first: 20, orderBy: timestamp, orderDirection: desc) {
+    id writer keyHash key value timestamp blockNumber transactionHash
+  }
+}
+
+query DataWrittenByWriter($writer: Bytes!) {
+  dataWrittens(
+    first: 20
+    orderBy: timestamp
+    orderDirection: desc
+    where: { writer: $writer }
+  ) {
+    id writer keyHash key value timestamp blockNumber transactionHash
+  }
+}

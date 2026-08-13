@@ -1,0 +1,31 @@
+{
+  "name": "evm-event-lab",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Hardhat 2 and ethers v6 event-log learning project",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "node": "hardhat node",
+    "deploy:local": "hardhat run scripts/deploy.js --network localhost",
+    "deploy:sepolia": "hardhat run scripts/deploy.js --network sepolia",
+    "read:rpc": "node scripts/read-rpc.js",
+    "compare:providers": "node scripts/compare-providers.js",
+    "write:local": "hardhat run scripts/write-data.js --network localhost",
+    "write:sepolia": "hardhat run scripts/write-data.js --network sepolia",
+    "read:events": "node scripts/read-events.js",
+    "graph:install": "npm install --prefix subgraph",
+    "graph:codegen": "npm run codegen --prefix subgraph",
+    "graph:build": "npm run build --prefix subgraph"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.0.6",
+    "@nomicfoundation/hardhat-ethers": "^3.0.8",
+    "chai": "^4.5.0",
+    "dotenv": "^16.4.5",
+    "hardhat": "^2.22.15"
+  },
+  "dependencies": {
+    "ethers": "^6.13.4"
+  }
+}

@@ -1,0 +1,9 @@
+node_modules/
+artifacts/
+cache/
+coverage/
+.env
+subgraph/generated/
+subgraph/build/
+subgraph/.graphclient/
+*.log

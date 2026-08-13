@@ -1,0 +1,17 @@
+.DS_Store
+**/.DS_Store
+**/.env
+**/.env.local
+**/node_modules/
+**/artifacts/
+**/cache/
+**/generated/
+**/build/
+**/release/
+**/*.log
+
+# Local chain homes and generated keys must never enter Git.
+**/.edu/
+**/data/
+**/keyring-*/
+
