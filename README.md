@@ -65,12 +65,14 @@ blockchain-homework/
 │   ├── cmd/edud/                  # 节点 CLI
 │   ├── config.yml                 # 本地 Genesis / 账户分发配置
 │   ├── scripts/demo.sh            # 钱包、余额、转账、质押演示
+│   ├── frontend/                  # 只读链浏览器（React）
 │   └── README.md                  # Cosmos 学习手册
 ├── evm-event-lab/                 # 作业 2：EVM 链上数据读取
 │   ├── contracts/EventStore.sol   # 事件写入合约
 │   ├── scripts/                   # 部署、RPC、写入、日志读取脚本
 │   ├── test/                      # Solidity / Hardhat 测试
-│   └── subgraph/                  # schema、mapping、GraphQL 查询
+│   ├── subgraph/                  # schema、mapping、GraphQL 查询
+│   └── frontend/                  # React + ethers 前端控制台
 ├── docs/                          # 需求、架构、验收、变更记录
 └── Makefile                       # 两条实验线的统一检查入口
 ```
@@ -116,6 +118,18 @@ DEMO_SEND=1 ./scripts/demo.sh
 
 完整说明见 [Cosmos 作业手册](cosmos-chain/README.md)。
 
+再开一个终端启动链浏览器（只读，可视化区块、余额、验证者、委托与交易）：
+
+```bash
+cd cosmos-chain/frontend
+npm install
+cp .env.example .env
+npm run dev
+```
+
+打开 http://localhost:5174/ 。需要节点开启 REST API（`app.toml` 中 `[api] enable = true`）。
+完整说明见 [链浏览器手册](cosmos-chain/frontend/README.md)。
+
 ### 3. 运行 EVM / ethers.js 作业
 
 ```bash
@@ -148,6 +162,19 @@ npm run read:events
 
 完整说明见 [EVM / The Graph 作业手册](evm-event-lab/README.md)。
 
+### 4. 启动前端控制台（可选）
+
+命令行跑通之后，可以用同一套合约的可视化界面：连接 MetaMask 写入事件，并把三种读取方式并排比较。
+
+```bash
+cd evm-event-lab/frontend
+npm install
+cp .env.example .env   # 把部署地址填进 VITE_EVENT_STORE_ADDRESS
+npm run dev
+```
+
+打开 http://localhost:5173/ 。完整说明见 [前端控制台手册](evm-event-lab/frontend/README.md)。
+
 ## 🔍 作业 2 的三种日志读取方式
 
 `EventStore.writeData(key, value)` 不把业务数据写入 Solidity storage，而是发出 `DataWritten` 事件。
@@ -168,6 +195,8 @@ event DataWritten(
 2. **ethers.js**：`contract.queryFilter`，理解合约事件封装。
 3. **The Graph**：Subgraph mapping 将事件转换成实体，再通过 GraphQL 查询。
 
+前端控制台把这三种方式做成了三个 tab，读同一批日志、渲染同一张表，可以直接对照结果。
+
 ## ✅ 验收状态
 
 | 检查项 | 状态 | 说明 |
@@ -178,9 +207,13 @@ event DataWritten(
 | Hardhat 测试 | ✅ | `2 passing` |
 | 本地 EVM 部署 / 写入 / 读取 | ✅ | 已验证 RPC、`queryFilter`、Receipt |
 | The Graph codegen / build | ✅ | Subgraph 构建通过 |
-| Sepolia 部署 | ⏳ | 需要本地测试钱包与 RPC 配置 |
-| Infura / Alchemy 实际读取 | ⏳ | 需要本地配置两个 RPC URL |
-| The Graph Studio 发布 | ⏳ | 需要真实合约地址、起始区块和部署凭证 |
+| EVM 前端控制台 | ✅ | 本地已验证连接配置、三种读取方式、实时订阅 |
+| Cosmos 链浏览器 | ✅ | 本地已验证区块、余额、验证者、委托奖励、交易与自动刷新 |
+| Sepolia 部署 | ✅ | `0x275Bb352…3a5775`，区块 11507193（见[部署记录](docs/sepolia-deployment.md)） |
+| Sepolia 事件写入 / 读取 | ✅ | 区块 11507198，`getLogs` 与 `queryFilter` 均已读回 |
+| Infura / Alchemy 实际读取 | ✅ | 两个 provider 结果一致，已记录延迟对比 |
+| Subgraph 指向真实合约 | ✅ | manifest 已填入地址与 startBlock，codegen / build 通过 |
+| The Graph Studio 发布 | ✅ | `mychain` v0.0.1，已索引且 GraphQL 查询返回真实数据 |
 
 统一执行本地检查：
 
@@ -191,6 +224,7 @@ make check
 ## 📚 文档导航
 
 - [需求说明](docs/requirements.md)
+- [Sepolia 部署记录](docs/sepolia-deployment.md)
 - [总体架构](docs/architecture.md)
 - [验收标准](docs/acceptance.md)
 - [变更记录](docs/CHANGELOG-2026-08-12.md)

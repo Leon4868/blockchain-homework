@@ -11,7 +11,8 @@ evm-event-lab/
 ├── contracts/EventStore.sol       # 只通过 Event Log 写数据的合约
 ├── test/EventStore.test.js        # 事件与输入边界测试
 ├── scripts/                       # 部署、RPC、写入、日志读取脚本
-└── subgraph/                      # manifest、ABI、schema、mapping、查询
+├── subgraph/                      # manifest、ABI、schema、mapping、查询
+└── frontend/                      # React + ethers v6 前端控制台
 ```
 
 ## 1. 安装与编译
@@ -120,6 +121,21 @@ npm run graph:build
 
 发布到 The Graph Studio 时按其当前流程配置认证；部署凭证不得进入仓库。
 
+## 7. 前端控制台
+
+命令行跑通全流程之后，`frontend/` 提供同一套合约的可视化界面：MetaMask 连接与网络切换、
+`writeData` 表单（含交易哈希与 receipt 回显）、三种读取方式的 tab 对比、以及基于
+`contract.on` 的实时事件订阅。
+
+```bash
+cd frontend
+npm install
+cp .env.example .env   # 填入 VITE_EVENT_STORE_ADDRESS
+npm run dev
+```
+
+打开 http://localhost:5173/ 。详见 [frontend/README.md](frontend/README.md)。
+
 ## 工具链安全边界
 
 当前依赖审计没有 critical 级别问题。Hardhat 2 和 The Graph CLI 的开发依赖仍可能报告
@@ -128,5 +144,5 @@ Hardhat 2 兼容性的强制大版本升级。测试网钱包也应与真实资�
 
 ## 验收顺序
 
-编译 → 合约测试 → 本地持久节点部署 → ethers 写入 → 三种方式读日志 → Sepolia 部署 →
-Infura/Alchemy 对比 → Subgraph codegen/build → GraphQL 查询。
+编译 → 合约测试 → 本地持久节点部署 → ethers 写入 → 三种方式读日志 → 前端控制台验证 →
+Sepolia 部署 → Infura/Alchemy 对比 → Subgraph codegen/build → GraphQL 查询。

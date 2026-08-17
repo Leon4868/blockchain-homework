@@ -4,7 +4,7 @@
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy --studio event-store"
+    "deploy": "graph deploy mychain"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "0.98.1",

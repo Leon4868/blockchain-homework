@@ -9,6 +9,7 @@
 - `cmd/edud/`：节点二进制与 CLI 入口。
 - `config.yml`：Genesis 账户、faucet、链 ID 和验证者配置。
 - `scripts/demo.sh`：默认只读、需要显式开关才发送交易的本地演示脚本。
+- `frontend/`：只读链浏览器，把区块、余额、验证者、委托和交易可视化。
 
 教学账户为 `alice`、`bob` 和 `validator`。Genesis 给三者分配 `uedu`，并从
 `validator` 的余额中绑定一部分作为初始验证者质押。
@@ -96,6 +97,24 @@ VALIDATOR_ADDRESS=<eduvaloper地址> DEMO_DELEGATE=1 ./scripts/demo.sh
 
 脚本使用本地 `test` keyring，不包含助记词、私钥，也不会重置链数据。
 
+## 链浏览器
+
+`frontend/` 提供一个只读网页，把上面这些查询结果可视化：实时高度与出块间隔、三个账户
+余额、验证者绑定状态与佣金、委托与待领取奖励、以及最近交易列表。
+
+```bash
+cd frontend
+npm install
+cp .env.example .env
+npm run dev
+```
+
+打开 http://localhost:5174/ 。
+
+页面不发起任何交易 —— 转账和委托仍走 `demo.sh`，页面会在下一次轮询时自动反映变化，
+不需要手动刷新。数据来自节点 REST API，因此 `app.toml` 里必须有 `[api] enable = true`
+（`ignite chain serve` 默认已开启）。详见 [frontend/README.md](frontend/README.md)。
+
 ## Faucet
 
 开发 faucet 由 `config.yml` 配置，使用 `bob` 账户和 `uedu`。启动 `ignite chain serve` 后，
@@ -108,4 +127,5 @@ VALIDATOR_ADDRESS=<eduvaloper地址> DEMO_DELEGATE=1 ./scripts/demo.sh
 - alice 到 bob 的 Bank 转账成功且余额变化正确。
 - validator 状态、alice 的委托和奖励可查。
 - 报告明确说明这是 PoS 出块/质押奖励，不是 PoW。
+- 链浏览器能同步显示上述高度、余额、验证者与交易变化。
 

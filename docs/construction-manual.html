@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blockchain Homework Lab · 施工手册</title>
+<style>
+  :root{
+    --bg:#f7f7f8;
+    --surface:#ffffff;
+    --ink:#1c1d21;
+    --ink-2:#4a4d57;
+    --ink-3:#7a7e8a;
+    --line:#e3e4e8;
+    --line-2:#eceef1;
+    --accent:#5b52d3;
+    --accent-soft:#eeecfb;
+    --cosmos:#6f42c1;
+    --cosmos-soft:#f2ecfc;
+    --evm:#b08000;
+    --evm-soft:#fdf6e0;
+    --graph:#6747ed;
+    --ok:#1f7a4d;
+    --ok-soft:#e6f4ec;
+    --warn:#9a5b00;
+    --warn-soft:#fdf1de;
+    --danger:#a32b2b;
+    --danger-soft:#fbecec;
+    --code-bg:#1e1f26;
+    --code-ink:#e8e8ec;
+    --radius:10px;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;scroll-padding-top:16px}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    font-size:15px;line-height:1.75;-webkit-font-smoothing:antialiased;
+  }
+  .layout{display:flex;align-items:flex-start;max-width:1240px;margin:0 auto;gap:32px;padding:0 24px}
+
+  /* ---------- sidebar ---------- */
+  nav.toc{
+    position:sticky;top:0;height:100vh;overflow-y:auto;flex:0 0 236px;
+    padding:28px 0 48px;font-size:13.5px;
+  }
+  nav.toc .brand{font-weight:700;font-size:15px;letter-spacing:-.01em;margin-bottom:2px}
+  nav.toc .brand-sub{color:var(--ink-3);font-size:12px;margin-bottom:20px}
+  nav.toc a{
+    display:block;padding:5px 12px;color:var(--ink-2);text-decoration:none;
+    border-left:2px solid transparent;border-radius:0 6px 6px 0;
+  }
+  nav.toc a:hover{background:var(--surface);color:var(--ink)}
+  nav.toc a.lvl1{font-weight:600;color:var(--ink);margin-top:10px}
+  nav.toc a.lvl2{padding-left:24px;font-size:13px}
+  nav.toc a.active{border-left-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+
+  /* ---------- main ---------- */
+  main{flex:1;min-width:0;padding:36px 0 120px;max-width:820px}
+
+  header.hero{
+    background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    padding:32px 34px;margin-bottom:28px;
+  }
+  header.hero h1{margin:0 0 6px;font-size:29px;letter-spacing:-.02em;line-height:1.3}
+  header.hero .sub{color:var(--ink-2);margin:0 0 18px}
+  .pills{display:flex;flex-wrap:wrap;gap:6px}
+  .pill{
+    font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:20px;
+    background:var(--line-2);color:var(--ink-2);border:1px solid var(--line);
+  }
+  .pill.c{background:var(--cosmos-soft);color:var(--cosmos);border-color:#e2d6f6}
+  .pill.e{background:var(--evm-soft);color:var(--evm);border-color:#f2e4bb}
+  .pill.g{background:var(--accent-soft);color:var(--graph);border-color:#ddd9f7}
+
+  section{
+    background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    padding:26px 34px 30px;margin-bottom:22px;
+  }
+  h2{
+    font-size:21px;letter-spacing:-.01em;margin:0 0 4px;padding-bottom:0;
+    display:flex;align-items:center;gap:10px;line-height:1.4;
+  }
+  h2 .num{
+    flex:0 0 auto;width:27px;height:27px;border-radius:8px;background:var(--accent);color:#fff;
+    font-size:13px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;
+  }
+  h2.cosmos .num{background:var(--cosmos)}
+  h2.evm .num{background:var(--evm)}
+  h2.graph .num{background:var(--graph)}
+  .sect-note{color:var(--ink-3);font-size:13.5px;margin:0 0 20px;padding-left:37px}
+  h3{font-size:16px;margin:26px 0 8px;letter-spacing:-.005em}
+  h3:first-of-type{margin-top:6px}
+  h4{font-size:14px;margin:18px 0 6px;color:var(--ink-2)}
+  p{margin:0 0 12px}
+  ul,ol{margin:0 0 12px;padding-left:22px}
+  li{margin:4px 0}
+  a{color:var(--accent)}
+  code{
+    font-family:var(--mono);font-size:12.8px;background:var(--line-2);
+    padding:1.5px 5px;border-radius:5px;color:#2c2d33;
+  }
+  strong{font-weight:650}
+
+  /* ---------- code blocks ---------- */
+  .code{position:relative;margin:0 0 14px}
+  .code pre{
+    margin:0;background:var(--code-bg);color:var(--code-ink);border-radius:var(--radius);
+    padding:14px 16px;overflow-x:auto;font-family:var(--mono);font-size:12.9px;line-height:1.65;
+  }
+  .code pre code{background:none;color:inherit;padding:0;font-size:inherit}
+  .code .cmt{color:#8f96a8}
+  .code .lbl{
+    position:absolute;top:0;right:0;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;
+    color:#8f96a8;padding:7px 11px;font-family:var(--mono);
+  }
+  .copy{
+    position:absolute;top:7px;right:9px;background:#33353f;color:#c9cbd4;border:none;
+    border-radius:6px;padding:3px 9px;font-size:11px;cursor:pointer;opacity:0;transition:opacity .15s;
+    font-family:inherit;
+  }
+  .code:hover .copy{opacity:1}
+  .copy:hover{background:#41434f;color:#fff}
+  .copy.done{background:var(--ok);color:#fff}
+
+  /* ---------- callouts ---------- */
+  .note{
+    border-left:3px solid var(--accent);background:var(--accent-soft);
+    padding:11px 16px;border-radius:0 8px 8px 0;margin:0 0 14px;font-size:14px;
+  }
+  .note.warn{border-color:#d99a2b;background:var(--warn-soft)}
+  .note.danger{border-color:#c94a4a;background:var(--danger-soft)}
+  .note.ok{border-color:#3a9a68;background:var(--ok-soft)}
+  .note b{display:block;font-size:12.5px;letter-spacing:.02em;margin-bottom:2px}
+  .note.warn b{color:var(--warn)}
+  .note.danger b{color:var(--danger)}
+  .note.ok b{color:var(--ok)}
+  .note.warn,.note.danger,.note.ok{color:#3a3b42}
+  .note p:last-child{margin-bottom:0}
+
+  .expect{
+    border:1px dashed var(--line);border-radius:8px;padding:10px 14px;margin:0 0 14px;
+    font-size:13.2px;color:var(--ink-2);background:#fbfbfc;
+  }
+  .expect b{color:var(--ok);font-size:12px;letter-spacing:.02em;display:block;margin-bottom:3px}
+  .expect code{background:#eef0f3}
+
+  /* ---------- tables ---------- */
+  table{width:100%;border-collapse:collapse;margin:0 0 16px;font-size:13.6px}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line-2);vertical-align:top}
+  th{font-size:12px;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-3);border-bottom:1px solid var(--line)}
+  td code{font-size:12.2px}
+  tbody tr:last-child td{border-bottom:none}
+
+  /* ---------- checklist ---------- */
+  .check{list-style:none;padding:0;margin:0 0 8px}
+  .check li{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--line-2)}
+  .check li:last-child{border-bottom:none}
+  .check input{margin-top:5px;flex:0 0 auto;accent-color:var(--accent);width:15px;height:15px}
+  .check label{flex:1;cursor:pointer;font-size:14px}
+  .check .tag{
+    font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:4px;margin-right:6px;
+    background:var(--line-2);color:var(--ink-3);vertical-align:1.5px;
+  }
+  .check .tag.c{background:var(--cosmos-soft);color:var(--cosmos)}
+  .check .tag.e{background:var(--evm-soft);color:var(--evm)}
+  .check .tag.g{background:var(--accent-soft);color:var(--graph)}
+
+  /* ---------- misc ---------- */
+  .flow{
+    display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 18px;
+    font-size:12.6px;color:var(--ink-2);
+  }
+  .flow span{background:var(--line-2);border-radius:6px;padding:4px 10px;white-space:nowrap}
+  .flow i{color:var(--ink-3);font-style:normal}
+  .fill{
+    display:inline-block;min-width:150px;border-bottom:1px solid #c8cad1;
+    color:var(--ink-3);font-family:var(--mono);font-size:12px;
+  }
+  hr{border:none;border-top:1px solid var(--line-2);margin:24px 0}
+  .kicker{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:700;margin:0 0 6px}
+  footer{color:var(--ink-3);font-size:12.5px;text-align:center;padding:0 0 40px}
+
+  @media (max-width:940px){
+    nav.toc{display:none}
+    .layout{padding:0 16px}
+    section{padding:22px 20px 26px}
+    header.hero{padding:26px 22px}
+    .sect-note{padding-left:0}
+  }
+  @media print{
+    nav.toc,.copy{display:none}
+    body{background:#fff;font-size:11.5pt}
+    section,header.hero{border:none;box-shadow:none;page-break-inside:avoid;padding:0;margin-bottom:18px}
+    .code pre{background:#f2f2f4;color:#000;border:1px solid #ddd}
+    .code .cmt{color:#666}
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<nav class="toc" id="toc">
+  <div class="brand">⛓️ 施工手册</div>
+  <div class="brand-sub">blockchain-homework</div>
+  <a class="lvl1" href="#s0">0 · 开工前须知</a>
+  <a class="lvl1" href="#s1">1 · 环境准备</a>
+  <a class="lvl2" href="#s1-1">1.1 基础工具链</a>
+  <a class="lvl2" href="#s1-2">1.2 安装 Ignite CLI</a>
+  <a class="lvl2" href="#s1-3">1.3 拉取项目并自检</a>
+  <a class="lvl1" href="#s2">2 · 作业一：Cosmos 链</a>
+  <a class="lvl2" href="#s2-1">2.1 起链</a>
+  <a class="lvl2" href="#s2-2">2.2 钱包分发</a>
+  <a class="lvl2" href="#s2-3">2.3 Bank 转账</a>
+  <a class="lvl2" href="#s2-4">2.4 质押 / 出块 / 奖励</a>
+  <a class="lvl2" href="#s2-5">2.5 一键演示脚本</a>
+  <a class="lvl1" href="#s3">3 · 作业二：本地 EVM</a>
+  <a class="lvl2" href="#s3-1">3.1 安装编译测试</a>
+  <a class="lvl2" href="#s3-2">3.2 本地节点与部署</a>
+  <a class="lvl2" href="#s3-3">3.3 RPC 读链</a>
+  <a class="lvl2" href="#s3-4">3.4 写事件 + 三种读法</a>
+  <a class="lvl1" href="#s4">4 · Sepolia 测试网</a>
+  <a class="lvl2" href="#s4-1">4.1 钱包与领水</a>
+  <a class="lvl2" href="#s4-2">4.2 Infura / Alchemy</a>
+  <a class="lvl2" href="#s4-3">4.3 部署与写入</a>
+  <a class="lvl2" href="#s4-4">4.4 双 RPC 对比</a>
+  <a class="lvl1" href="#s5">5 · The Graph</a>
+  <a class="lvl2" href="#s5-1">5.1 改 manifest</a>
+  <a class="lvl2" href="#s5-2">5.2 codegen / build</a>
+  <a class="lvl2" href="#s5-3">5.3 Studio 发布</a>
+  <a class="lvl2" href="#s5-4">5.4 GraphQL 查询</a>
+  <a class="lvl1" href="#s6">6 · 统一验收</a>
+  <a class="lvl1" href="#s7">7 · 踩坑速查表</a>
+  <a class="lvl1" href="#s8">8 · 安全红线</a>
+  <a class="lvl1" href="#s9">附录 · 结果记录表</a>
+</nav>
+
+<main>
+
+<header class="hero">
+  <h1>Blockchain Homework Lab · 施工手册</h1>
+  <p class="sub">从空白终端到两份作业全部可验收：Cosmos 应用链 + EVM 事件索引，逐条命令、预期输出与踩坑对照。</p>
+  <div class="pills">
+    <span class="pill c">Cosmos SDK 0.53.6</span>
+    <span class="pill c">CometBFT PoS</span>
+    <span class="pill e">Hardhat 2</span>
+    <span class="pill e">ethers.js v6</span>
+    <span class="pill g">The Graph</span>
+    <span class="pill">Go 1.24+</span>
+    <span class="pill">Node 20+</span>
+  </div>
+</header>
+
+<!-- ============ 0 ============ -->
+<section id="s0">
+  <h2><span class="num">0</span>开工前须知</h2>
+  <p class="sect-note">先读这一页，能省掉后面一半的返工。</p>
+
+  <h3>这份手册怎么用</h3>
+  <p>全篇按<strong>施工顺序</strong>排列，每一步都是「命令 → 预期输出 → 记录什么」的三段式。带 <span class="expect" style="display:inline;padding:2px 8px;border-radius:5px"><b style="display:inline">预期</b></span> 的框是判断这一步是否真的成功的依据——看不到对应输出就不要往下走，否则错误会累积到很远的地方才爆出来。</p>
+
+  <h3>两条线是独立的</h3>
+  <p>Cosmos 线和 EVM 线之间<strong>没有任何代码依赖</strong>，可以分两天做，也可以两个终端并行。唯一的交集是根目录的 <code>make check</code>。</p>
+  <div class="flow">
+    <span>作业一 · cosmos-chain/</span><i>—</i><span>Go + Cosmos SDK + CometBFT</span><i>·</i><span>地址 <code>edu1…</code></span><i>·</i><span>denom <code>uedu</code></span>
+  </div>
+  <div class="flow">
+    <span>作业二 · evm-event-lab/</span><i>—</i><span>Solidity + Hardhat + ethers</span><i>·</i><span>地址 <code>0x…</code></span><i>·</i><span>Sepolia 11155111</span>
+  </div>
+
+  <h3>一句话说清"挖矿"</h3>
+  <div class="note warn">
+    <b>⚠ 术语校正</b>
+    <p>Cosmos 用的是 <strong>PoS</strong>：验证者质押 <code>uedu</code> → 参与共识出块 → 验证者和委托人按比例分奖励。整个流程里<strong>没有算力、没有难度、没有 nonce 爆破</strong>。作业报告里写"挖矿"时必须加这句限定，否则概念是错的。</p>
+  </div>
+
+  <h3>时间预算</h3>
+  <table>
+    <thead><tr><th>阶段</th><th>净耗时</th><th>主要卡点</th></tr></thead>
+    <tbody>
+      <tr><td>1 · 环境准备</td><td>20–60 分钟</td><td>Ignite CLI 安装、Go 模块首次下载（很重）</td></tr>
+      <tr><td>2 · Cosmos 全流程</td><td>30 分钟</td><td>首次 <code>ignite chain serve</code> 编译较久</td></tr>
+      <tr><td>3 · 本地 EVM</td><td>20 分钟</td><td>需要开两个终端</td></tr>
+      <tr><td>4 · Sepolia</td><td>30 分钟</td><td>领水排队、API Key 申请</td></tr>
+      <tr><td>5 · The Graph</td><td>30 分钟</td><td>Studio 注册、索引同步等待</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ 1 ============ -->
+<section id="s1">
+  <h2><span class="num">1</span>环境准备</h2>
+  <p class="sect-note">目标：四条 version 命令全部有输出。</p>
+
+  <h3 id="s1-1">1.1 基础工具链</h3>
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>go version      <span class="cmt"># 需要 go1.24 或更高</span>
+node -v         <span class="cmt"># 需要 v20 或更高</span>
+npm -v          <span class="cmt"># 需要 10 或更高</span>
+git --version</code></pre>
+  </div>
+  <p>macOS 缺什么就补什么：</p>
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>brew install go node git</code></pre>
+  </div>
+  <div class="note">
+    <b>Go 环境变量</b>
+    <p>确认 <code>go env GOPATH</code> 下的 <code>bin</code> 在 <code>PATH</code> 里，否则 <code>make install</code> 装出来的 <code>edud</code> 找不到：</p>
+  </div>
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>echo 'export PATH="$PATH:$(go env GOPATH)/bin"' &gt;&gt; ~/.zshrc
+source ~/.zshrc</code></pre>
+  </div>
+
+  <h3 id="s1-2">1.2 安装 Ignite CLI v29</h3>
+  <p>Cosmos 线用 Ignite 起链。<strong>先试官方安装脚本</strong>：</p>
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>curl https://get.ignite.com/cli! | bash
+ignite version</code></pre>
+  </div>
+  <div class="expect"><b>预期</b> 输出包含 <code>Ignite CLI version: v29.x</code>。</div>
+
+  <div class="note danger">
+    <b>✗ 不要用 go install 装 Ignite</b>
+    <p>本项目搭建时踩过：<code>go install github.com/ignite/cli/v29@v29.8.0</code> 会失败（该路径不是 main 包），<code>…/v29/ignite@v29.8.0</code> 也不存在。就算写对入口 <code>…/v29/ignite/cmd/ignite@v29.8.0</code>，当前 Go 也会因为该模块含 <code>replace</code> 指令而<strong>直接拒绝安装</strong>。这不是你的环境问题，是 Go 的规则。</p>
+  </div>
+
+  <h4>官方脚本失败时的备用方案（从源码构建）</h4>
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>git clone --depth 1 -b v29.8.0 https://github.com/ignite/cli.git /tmp/ignite-src
+cd /tmp/ignite-src
+go build -o "$(go env GOPATH)/bin/ignite" ./ignite/cmd/ignite
+ignite version</code></pre>
+  </div>
+  <div class="note warn">
+    <b>⚠ 首次构建会很慢</b>
+    <p>它要拉整套 Cosmos SDK 依赖，<strong>5–15 分钟没有任何输出是正常的</strong>，不要 Ctrl-C。如果 Ignite 因为加载本机已装插件而报错，加一个干净的配置目录再跑：<code>IGNT_CONFIG_DIR=/tmp/ignite-config ignite …</code>。</p>
+  </div>
+
+  <h3 id="s1-3">1.3 拉取项目并自检</h3>
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>git clone https://github.com/Leon4868/blockchain-homework.git
+cd blockchain-homework
+make help</code></pre>
+  </div>
+  <div class="expect"><b>预期</b> 列出 <code>cosmos-tidy / cosmos-test / cosmos-build / evm-install / evm-compile / evm-test / graph-codegen / graph-build / check</code> 九个目标。</div>
+  <p>本地已有该目录就直接 <code>cd</code> 进去，跳过 clone。</p>
+</section>
+
+<!-- ============ 2 ============ -->
+<section id="s2">
+  <h2 class="cosmos"><span class="num">2</span>作业一：Cosmos 自己的链</h2>
+  <p class="sect-note">钱包分发 → 转账 → 质押出块拿奖励。链名 <code>edu</code>，二进制 <code>edud</code>，地址前缀 <code>edu</code>，denom <code>uedu</code>。</p>
+
+  <div class="flow">
+    <span>ignite chain serve</span><i>→</i><span>Genesis 分发</span><i>→</i><span>查地址余额</span><i>→</i><span>bank send</span><i>→</i><span>staking delegate</span><i>→</i><span>distribution rewards</span>
+  </div>
+
+  <h3 id="s2-1">2.1 起链（终端 A，全程保持运行）</h3>
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>cd cosmos-chain
+ignite chain serve</code></pre>
+  </div>
+  <p>这条命令一次干了四件事：编译 <code>edud</code> → 按 <code>config.yml</code> 生成 Genesis → 创建 alice/bob/validator 三个密钥 → 启动节点开始出块。</p>
+  <div class="expect">
+    <b>预期</b> 终端持续滚动 <code>INF committed state ... height=1,2,3</code>，并打印出 <code>Token faucet: http://0.0.0.0:4500</code>。<strong>看到高度在涨 = 链活着。</strong>
+  </div>
+  <div class="note warn">
+    <b>⚠ 关于重置</b>
+    <p><code>ignite chain serve</code> 默认<strong>复用</strong>已有本地数据。要从干净 Genesis 重来才加 <code>-r</code>（<code>ignite chain serve -r</code>）——这会删掉之前的余额和交易记录，做完转账演示前别乱加。</p>
+  </div>
+
+  <h4>安装 edud 命令（终端 B）</h4>
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>cd cosmos-chain
+make install          <span class="cmt"># 装到 $(go env GOPATH)/bin/edud</span>
+edud version --long</code></pre>
+  </div>
+  <p>不想装全局也行，用仓库里已构建的二进制：<code>make build</code> 后以 <code>./build/edud</code> 替换下文所有 <code>edud</code>。</p>
+
+  <h3 id="s2-2">2.2 钱包分发与余额</h3>
+  <p>分发逻辑写在 <code>config.yml</code>，链一初始化就生效：</p>
+  <table>
+    <thead><tr><th>账户</th><th>Genesis 余额</th><th>角色</th></tr></thead>
+    <tbody>
+      <tr><td><code>alice</code></td><td>300000000uedu</td><td>普通用户 · 转账发起方</td></tr>
+      <tr><td><code>bob</code></td><td>200000000uedu</td><td>普通用户 · 收款方 + faucet 出款账户</td></tr>
+      <tr><td><code>validator</code></td><td>1000000000uedu</td><td>验证者，其中 500000000uedu 已绑定为初始质押</td></tr>
+    </tbody>
+  </table>
+
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>edud keys list --keyring-backend test
+
+ALICE=$(edud keys show alice -a --keyring-backend test)
+BOB=$(edud keys show bob   -a --keyring-backend test)
+echo "$ALICE"; echo "$BOB"
+
+edud query bank balances "$ALICE"
+edud query bank balances "$BOB"</code></pre>
+  </div>
+  <div class="expect">
+    <b>预期</b> 地址形如 <code>edu1xxxxxxxx…</code>；余额分别是 <code>300000000uedu</code> 与 <code>200000000uedu</code>。
+  </div>
+  <div class="note danger">
+    <b>🔒 只记录地址</b>
+    <p><code>keys list</code> 和 <code>keys show</code> 只输出公开地址。<strong>永远不要执行 <code>keys export</code> / <code>keys mnemonic</code> 并把结果贴进作业报告或仓库。</strong></p>
+  </div>
+
+  <h4>Faucet（可选）</h4>
+  <p>Ignite 起链时会同时开一个 faucet 服务（默认 <code>:4500</code>），从 <code>bob</code> 账户出款，单地址每 24 小时上限 <code>10000000uedu</code>。演示"给新钱包发币"时用它：</p>
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>edud keys add carol --keyring-backend test          <span class="cmt"># 新建一个空钱包</span>
+CAROL=$(edud keys show carol -a --keyring-backend test)
+
+curl -X POST http://0.0.0.0:4500 \
+  -H "Content-Type: application/json" \
+  -d "{\"address\":\"$CAROL\",\"coins\":[\"1000000uedu\"]}"
+
+edud query bank balances "$CAROL"</code></pre>
+  </div>
+
+  <h3 id="s2-3">2.3 Bank 转账</h3>
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>edud tx bank send "$ALICE" "$BOB" 100000uedu \
+  --from alice \
+  --keyring-backend test \
+  --chain-id edu \
+  --yes</code></pre>
+  </div>
+  <div class="expect">
+    <b>预期</b> 返回 JSON 里 <code>code: 0</code> 和一个 <code>txhash</code>。<code>code</code> 非 0 就是失败，看 <code>raw_log</code>。
+  </div>
+  <p>等一两个区块后核对——这是验收要的"余额变化"证据：</p>
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>edud query tx &lt;txhash&gt;
+edud query bank balances "$ALICE"   <span class="cmt"># 少 100000uedu + 手续费</span>
+edud query bank balances "$BOB"     <span class="cmt"># 多 100000uedu</span></code></pre>
+  </div>
+
+  <h3 id="s2-4">2.4 质押、出块与奖励（作业里的"挖矿"）</h3>
+  <p>质押要用 <code>eduvaloper…</code> 格式的 operator 地址，和普通 <code>edu1…</code> 地址不是一个东西：</p>
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>VALOPER=$(edud keys show validator -a --bech val --keyring-backend test)
+echo "$VALOPER"                      <span class="cmt"># eduvaloper1…</span>
+
+edud query staking validator "$VALOPER"</code></pre>
+  </div>
+  <div class="expect"><b>预期</b> 看到 <code>status: BOND_STATUS_BONDED</code>、<code>tokens: 500000000</code>、以及佣金率 <code>commission</code>。</div>
+
+  <p>用 alice 委托，然后查奖励：</p>
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>edud tx staking delegate "$VALOPER" 100000uedu \
+  --from alice --keyring-backend test --chain-id edu --yes
+
+edud query staking delegations "$ALICE"
+edud query distribution rewards "$ALICE"      <span class="cmt"># 等几个区块才有数</span>
+edud query distribution commission "$VALOPER" <span class="cmt"># 验证者佣金收入</span></code></pre>
+  </div>
+  <div class="note">
+    <b>报告里要讲清的因果链</b>
+    <p>验证者质押 <code>uedu</code> → 按质押权重轮流提议区块 → 区块被 CometBFT 共识确认 → 区块奖励进入 distribution 模块 → 验证者抽佣金，剩下按委托比例分给委托人。<strong>奖励来自出块，不来自算力。</strong></p>
+  </div>
+  <p>最后领取奖励，闭环这条线：</p>
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>edud tx distribution withdraw-rewards "$VALOPER" \
+  --from alice --keyring-backend test --chain-id edu --yes
+
+edud query bank balances "$ALICE"   <span class="cmt"># 余额里多出奖励部分</span></code></pre>
+  </div>
+
+  <h3 id="s2-5">2.5 一键演示脚本</h3>
+  <p>答辩/录屏时用它，比手敲一串命令稳。默认<strong>只读</strong>，不会动链上状态：</p>
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>./scripts/demo.sh                                    <span class="cmt"># 只查 keys / 高度 / 余额</span>
+DEMO_SEND=1 ./scripts/demo.sh                        <span class="cmt"># 额外发一笔转账</span>
+VALIDATOR_ADDRESS="$VALOPER" DEMO_DELEGATE=1 ./scripts/demo.sh   <span class="cmt"># 额外发一笔委托</span></code></pre>
+  </div>
+  <p>没装全局 <code>edud</code> 时指定二进制：<code>EDUD_BIN=./build/edud ./scripts/demo.sh</code>。</p>
+
+  <div class="note ok">
+    <b>✓ 作业一收工标准</b>
+    <p>手上有：三个账户地址、Genesis 余额截图、转账 txhash + 前后余额、validator 状态、delegation 记录、rewards 查询结果，以及一句"这是 PoS 不是 PoW"的说明。</p>
+  </div>
+</section>
+
+<!-- ============ 3 ============ -->
+<section id="s3">
+  <h2 class="evm"><span class="num">3</span>作业二 A：本地 EVM 跑通闭环</h2>
+  <p class="sect-note">先在本地把「部署 → 写事件 → 三种方式读日志」全部跑通，再上测试网。这样上链时只剩网络问题。</p>
+
+  <h3 id="s3-1">3.1 安装、编译、测试</h3>
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>cd evm-event-lab
+npm install
+npm run graph:install     <span class="cmt"># 装 subgraph/ 子项目依赖</span>
+cp .env.example .env
+
+npm run compile
+npm test</code></pre>
+  </div>
+  <div class="expect"><b>预期</b> <code>Compiled 1 Solidity file successfully</code>，测试输出 <code>2 passing</code>。</div>
+  <div class="note">
+    <b>关于 npm audit 告警</b>
+    <p>Hardhat 2 和 The Graph CLI 的开发依赖会报一批非 critical 告警，<strong>不要执行 <code>npm audit fix --force</code></strong>——它会把 Hardhat 升到 3，直接破坏本项目。（<code>subgraph/package.json</code> 里已用 <code>overrides</code> 把有 Zip Slip 漏洞的 <code>decompress</code> 换成 <code>@xhmikosr/decompress@11.1.3</code>，那个 critical 已经处理掉了。）</p>
+  </div>
+
+  <h3 id="s3-2">3.2 本地节点与部署（两个终端）</h3>
+  <p><strong>终端 A</strong> —— 起一个持久节点，别关：</p>
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>npm run node</code></pre>
+  </div>
+  <div class="expect"><b>预期</b> 打印 <code>Started HTTP and WebSocket JSON-RPC server at http://127.0.0.1:8545/</code> 和 20 个测试账户。</div>
+
+  <p><strong>终端 B</strong> —— 部署：</p>
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>npm run deploy:local</code></pre>
+  </div>
+  <div class="expect"><b>预期</b> <code>EventStore deployed to: 0x5FbDB2315678afecb367f032d93F642f64180aa3</code>（干净节点上的首个部署地址通常就是这个）。</div>
+
+  <div class="note danger">
+    <b>✗ 别用 --network hardhat</b>
+    <p><code>--network hardhat</code> 起的是<strong>随进程消失的一次性内存链</strong>：部署脚本一结束，合约就没了，随后任何读取都会返回空。必须用上面这种「终端 A 常驻 + 终端 B <code>--network localhost</code>」的组合。</p>
+  </div>
+
+  <p>把地址写进 <code>.env</code>：</p>
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>EVENT_STORE_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3
+FROM_BLOCK=1
+DATA_KEY=course
+DATA_VALUE=hello</code></pre>
+    <span class="lbl">.env</span>
+  </div>
+
+  <h3 id="s3-3">3.3 用 ethers.js 读普通 RPC</h3>
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>npm run read:rpc</code></pre>
+  </div>
+  <div class="expect"><b>预期</b> <code>{ chainId: '31337', blockNumber: 1, blockHash: '0x…', transactionCount: 1 }</code>。</div>
+  <p>这一步对应作业里的"一般 RPC 节点"：<code>new ethers.JsonRpcProvider(url)</code> 之后，<code>getNetwork / getBlockNumber / getBlock</code> 三个调用就够说明问题。换任何兼容 EVM 的 RPC 只需改 <code>RPC_URL</code>。</p>
+
+  <h3 id="s3-4">3.4 写事件，再用三种方式读回来</h3>
+  <p>合约不存 storage，只发日志——这正是作业要的"通过日志形式写链上数据"：</p>
+  <div class="code">
+    <pre><code>event DataWritten(
+    address indexed writer,
+    bytes32 indexed keyHash,
+    string key,
+    string value,
+    uint256 timestamp
+);</code></pre>
+    <span class="lbl">EventStore.sol</span>
+  </div>
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>npm run write:local
+npm run read:events</code></pre>
+  </div>
+  <div class="expect">
+    <b>预期</b> <code>write:local</code> 打印 <code>writer / transaction / block</code>；<code>read:events</code> 依次输出三段：<code>provider.getLogs</code>、<code>queryFilter</code>、<code>transaction receipt</code>，三段里的 <code>key</code>、<code>value</code>、<code>writer</code> 完全一致。
+  </div>
+  <table>
+    <thead><tr><th>读法</th><th>层级</th><th>用来说明什么</th></tr></thead>
+    <tbody>
+      <tr><td><code>provider.getLogs</code></td><td>JSON-RPC 原生</td><td>日志本质是 topics + data，需要自己按 ABI 解码</td></tr>
+      <tr><td><code>contract.queryFilter</code></td><td>ethers.js 封装</td><td>ethers 帮你编码过滤条件并解码成命名参数</td></tr>
+      <tr><td><code>getTransactionReceipt</code></td><td>交易维度</td><td>日志是交易执行的副产物，挂在 Receipt 上</td></tr>
+    </tbody>
+  </table>
+  <div class="note">
+    <b>indexed 的作用</b>
+    <p><code>writer</code> 和 <code>keyHash</code> 带 <code>indexed</code>，会进 topics 从而<strong>可被过滤</strong>；<code>key</code>/<code>value</code>/<code>timestamp</code> 在 data 里，只能读出来不能当过滤条件。这也是 <code>keyHash</code> 存 <code>keccak256(key)</code> 的原因——字符串没法直接做 indexed 精确匹配。</p>
+  </div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section id="s4">
+  <h2 class="evm"><span class="num">4</span>作业二 B：上 Sepolia 测试网</h2>
+  <p class="sect-note">对应 README 里第一个 ⏳。做完这节才有资格在报告里写"已部署"。</p>
+
+  <h3 id="s4-1">4.1 准备测试钱包并领水</h3>
+  <div class="note danger">
+    <b>🔒 硬性要求</b>
+    <p>新建一个<strong>专用测试钱包</strong>，绝不能用有真实资产的钱包私钥。私钥只写进本地 <code>.env</code>（已被 <code>.gitignore</code> 忽略），永远不进 Git、不进聊天记录、不进作业报告。</p>
+  </div>
+  <ol>
+    <li>MetaMask 里新建账户，切到 Sepolia 网络，复制地址。</li>
+    <li>去水龙头领测试 ETH（<code>0.05</code> 就够部署 + 几次写入）：Google Cloud Web3 Faucet、Alchemy Sepolia Faucet、Infura Faucet 任选，通常要求账号有一定条件。</li>
+    <li>MetaMask → 账户详情 → 显示私钥，复制备用。</li>
+  </ol>
+
+  <h3 id="s4-2">4.2 申请 Infura 与 Alchemy 的 RPC</h3>
+  <p>作业要求"分别用 Infura 和 Alchemy 读链上数据"，所以两个都要申请：</p>
+  <table>
+    <thead><tr><th>服务</th><th>拿到的东西</th><th>URL 形态</th></tr></thead>
+    <tbody>
+      <tr><td>Infura</td><td>API Key</td><td><code>https://sepolia.infura.io/v3/&lt;KEY&gt;</code></td></tr>
+      <tr><td>Alchemy</td><td>App + HTTPS URL</td><td><code>https://eth-sepolia.g.alchemy.com/v2/&lt;KEY&gt;</code></td></tr>
+    </tbody>
+  </table>
+  <p>填进本地 <code>.env</code>：</p>
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/&lt;你的KEY&gt;
+INFURA_SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/&lt;你的KEY&gt;
+ALCHEMY_SEPOLIA_RPC_URL=https://eth-sepolia.g.alchemy.com/v2/&lt;你的KEY&gt;
+DEPLOYER_PRIVATE_KEY=&lt;测试钱包私钥，不带 0x 也可&gt;</code></pre>
+    <span class="lbl">.env</span>
+  </div>
+  <div class="note warn">
+    <b>⚠ sepolia 网络是条件开启的</b>
+    <p><code>hardhat.config.js</code> 里只有当 <code>SEPOLIA_RPC_URL</code> <strong>和</strong> <code>DEPLOYER_PRIVATE_KEY</code> 同时存在时才注册 <code>sepolia</code> 网络。报 <code>Network sepolia doesn't exist</code> 就是这两个变量之一没读到——检查 <code>.env</code> 是否在 <code>evm-event-lab/</code> 目录下、有没有多余引号。</p>
+  </div>
+
+  <h3 id="s4-3">4.3 部署并写入</h3>
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>npm run deploy:sepolia</code></pre>
+  </div>
+  <div class="expect"><b>预期</b> <code>EventStore deployed to: 0x…</code> + <code>Network: sepolia</code>。<strong>立刻把地址记下来</strong>并更新 <code>.env</code> 的 <code>EVENT_STORE_ADDRESS</code>。</div>
+  <p>到 <a href="https://sepolia.etherscan.io">sepolia.etherscan.io</a> 搜这个地址，记下<strong>部署交易哈希</strong>和<strong>部署区块号</strong>——后者就是 Subgraph 的 <code>startBlock</code>，现在就填进 <code>.env</code> 的 <code>FROM_BLOCK</code>。</p>
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>npm run write:sepolia
+
+<span class="cmt"># 用 Sepolia 而不是本地节点来读</span>
+RPC_URL="$SEPOLIA_RPC_URL" npm run read:events</code></pre>
+  </div>
+  <div class="expect"><b>预期</b> 三种读法都能读到刚写入的 <code>key/value</code>；Etherscan 的合约页 Events 标签里也能看到同一条 <code>DataWritten</code>。</div>
+  <div class="note warn">
+    <b>⚠ 一定要设 FROM_BLOCK</b>
+    <p>不设的话脚本从 0 块开始扫，公共 RPC 会直接拒绝或超时。把它设成部署区块号。</p>
+  </div>
+
+  <h3 id="s4-4">4.4 Infura vs Alchemy 对比</h3>
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>npm run compare:providers</code></pre>
+  </div>
+  <div class="expect"><b>预期</b> 两行输出 <code>Infura: chainId=11155111 block=…</code> / <code>Alchemy: chainId=11155111 block=…</code>，chainId 相同、区块高度相差 0–2 块。</div>
+  <p>报告里这样解释即可：两家是<strong>同一条链的不同接入点</strong>，chainId 必然一致；高度的微小差异来自各自节点的同步延迟，不代表数据不一致。若某行显示 <code>missing URL</code>，说明对应的 <code>.env</code> 变量没配。</p>
+</section>
+
+<!-- ============ 5 ============ -->
+<section id="s5">
+  <h2 class="graph"><span class="num">5</span>作业二 C：The Graph 把数据读回来</h2>
+  <p class="sect-note">对应 README 里最后一个 ⏳。前提：4.3 已经拿到真实合约地址和部署区块。</p>
+
+  <div class="flow">
+    <span>DataWritten 日志</span><i>→</i><span>subgraph.yaml 声明监听</span><i>→</i><span>mapping.ts 转实体</span><i>→</i><span>schema.graphql 定义结构</span><i>→</i><span>GraphQL 查询</span>
+  </div>
+
+  <h3 id="s5-1">5.1 改 manifest（关键一步）</h3>
+  <p>仓库里的 <code>address</code> 是全零、<code>startBlock</code> 是 0，那只是为了能本地 build 的占位符。<strong>不改就索引不到任何数据。</strong></p>
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>    source:
+      address: "0x你的真实合约地址"
+      abi: EventStore
+      startBlock: 你的部署区块号</code></pre>
+    <span class="lbl">subgraph/subgraph.yaml</span>
+  </div>
+  <p>其余字段不用动：<code>network: sepolia</code> 已对，事件签名 <code>DataWritten(indexed address,indexed bytes32,string,string,uint256)</code> 与合约完全匹配。</p>
+
+  <h3 id="s5-2">5.2 生成类型并构建</h3>
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>cd evm-event-lab
+npm run graph:codegen
+npm run graph:build</code></pre>
+  </div>
+  <div class="expect"><b>预期</b> <code>Types generated successfully</code> 与 <code>Build completed</code>，产物落在 <code>subgraph/build/</code>。</div>
+  <div class="note">
+    <b>合约改了就要重跑</b>
+    <p><code>codegen</code> 读 <code>subgraph/abis/EventStore.json</code> 生成 TS 类型。如果你改了 <code>EventStore.sol</code>，要先 <code>npm run compile</code>，把新 ABI 同步到 <code>subgraph/abis/</code>，再 codegen，否则 mapping 里的字段名对不上。</p>
+  </div>
+
+  <h3 id="s5-3">5.3 发布到 The Graph Studio</h3>
+  <ol>
+    <li>打开 <a href="https://thegraph.com/studio/">thegraph.com/studio</a>，用钱包登录。</li>
+    <li>Create a Subgraph，名字建议就叫 <code>event-store</code>（与 <code>subgraph/package.json</code> 里的 <code>graph deploy --studio event-store</code> 对应；用别的名字就要同步改这行）。</li>
+    <li>复制页面上的 <strong>Deploy Key</strong>。</li>
+  </ol>
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>cd subgraph
+npx graph auth &lt;你的 DEPLOY_KEY&gt;
+npm run deploy            <span class="cmt"># = graph deploy --studio event-store</span></code></pre>
+  </div>
+  <p>会提示输入版本号，填 <code>v0.0.1</code> 即可。</p>
+  <div class="expect"><b>预期</b> 输出 Studio 的查询 URL；Studio 页面上状态从 <code>Syncing</code> 变成 <code>Synced</code>（起始块设对的话通常几分钟）。</div>
+  <div class="note danger">
+    <b>🔒 Deploy Key 是凭证</b>
+    <p>只在终端里用，不要写进任何文件、不要提交、不要贴进报告截图。</p>
+  </div>
+
+  <h3 id="s5-4">5.4 GraphQL 查询（作业的最终产出）</h3>
+  <p>在 Studio 的 Playground 里直接粘贴 <code>subgraph/queries/data-written.graphql</code> 的内容：</p>
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>query RecentDataWritten {
+  dataWrittens(first: 20, orderBy: timestamp, orderDirection: desc) {
+    id writer keyHash key value timestamp blockNumber transactionHash
+  }
+}</code></pre>
+  </div>
+  <div class="expect"><b>预期</b> 返回你在 4.3 写入的那条记录，<code>key</code>/<code>value</code>/<code>writer</code> 与 Etherscan 上的日志一致。<strong>截这张图，它就是"用 The Graph 把数据读回来"的证据。</strong></div>
+  <p>也可以用 curl 打查询端点，作为脚本化证据：</p>
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>curl -X POST &lt;Studio 给的 Query URL&gt; \
+  -H "Content-Type: application/json" \
+  -d '{"query":"{ dataWrittens(first:5,orderBy:timestamp,orderDirection:desc){ key value writer blockNumber } }"}'</code></pre>
+  </div>
+
+  <div class="note">
+    <b>报告里要答的那道题：RPC 直查 vs The Graph</b>
+    <table style="margin:8px 0 0">
+      <thead><tr><th></th><th>ethers / getLogs</th><th>The Graph</th></tr></thead>
+      <tbody>
+        <tr><td>数据来源</td><td>节点实时扫描区块</td><td>预先索引好的数据库</td></tr>
+        <tr><td>查询能力</td><td>只能按 topics 过滤</td><td>任意字段排序、分页、条件组合</td></tr>
+        <tr><td>历史范围</td><td>受 RPC 区块跨度限制</td><td>从 startBlock 起全量</td></tr>
+        <tr><td>成本</td><td>范围一大就慢/被限流</td><td>查询快，但要先同步索引</td></tr>
+        <tr><td>实时性</td><td>最新块立即可读</td><td>落后若干区块</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ 6 ============ -->
+<section id="s6">
+  <h2><span class="num">6</span>统一验收</h2>
+  <p class="sect-note">交作业前跑一遍，再逐条勾选。</p>
+
+  <div class="code">
+    <button class="copy">复制</button>
+    <pre><code>cd blockchain-homework
+make check</code></pre>
+  </div>
+  <p>它会依次执行：Cosmos <code>go vet</code> + <code>go test ./...</code> + <code>edud</code> 构建 → EVM 合约编译 → Hardhat 测试 → Subgraph codegen + build。<strong>任意一步失败会立刻中断</strong>，所以全绿才算通过。</p>
+  <div class="expect"><b>预期</b> 末尾没有 <code>Error</code>/<code>FAIL</code>，Hardhat 部分显示 <code>2 passing</code>。</div>
+
+  <h3>验收清单</h3>
+  <ul class="check">
+    <li><input type="checkbox" id="k1"><label for="k1"><span class="tag c">Cosmos</span>能说清 Cosmos SDK 与 CometBFT 各自负责什么</label></li>
+    <li><input type="checkbox" id="k2"><label for="k2"><span class="tag c">Cosmos</span>链能启动并持续出块，能查到当前高度</label></li>
+    <li><input type="checkbox" id="k3"><label for="k3"><span class="tag c">Cosmos</span>alice / bob / validator 三个地址与 Genesis 余额已记录</label></li>
+    <li><input type="checkbox" id="k4"><label for="k4"><span class="tag c">Cosmos</span>能区分 <code>edu</code>(链名) / <code>edud</code>(二进制) / <code>edu1…</code>(地址前缀) / <code>uedu</code>(denom)</label></li>
+    <li><input type="checkbox" id="k5"><label for="k5"><span class="tag c">Cosmos</span>至少一笔 Bank 转账成功，且前后余额可核对</label></li>
+    <li><input type="checkbox" id="k6"><label for="k6"><span class="tag c">Cosmos</span>validator 状态、delegation、rewards 三个查询都有结果</label></li>
+    <li><input type="checkbox" id="k7"><label for="k7"><span class="tag c">Cosmos</span>报告里明确写了"共识是 PoS，不是 PoW"</label></li>
+    <li><input type="checkbox" id="k8"><label for="k8"><span class="tag e">EVM</span>本地 Hardhat 节点作为 JSON-RPC 数据源可用</label></li>
+    <li><input type="checkbox" id="k9"><label for="k9"><span class="tag e">EVM</span>ethers v6 能读 chainId、区块、余额、交易</label></li>
+    <li><input type="checkbox" id="k10"><label for="k10"><span class="tag e">EVM</span>EventStore 已部署到 Sepolia，地址 + txhash + 区块号 + Etherscan 链接齐全</label></li>
+    <li><input type="checkbox" id="k11"><label for="k11"><span class="tag e">EVM</span>同一条日志用 getLogs / queryFilter / Receipt 三种方式都读到了</label></li>
+    <li><input type="checkbox" id="k12"><label for="k12"><span class="tag e">EVM</span>Infura 与 Alchemy 均实际调通，chainId 与高度已对比</label></li>
+    <li><input type="checkbox" id="k13"><label for="k13"><span class="tag g">Graph</span>subgraph.yaml 已换成真实地址与 startBlock</label></li>
+    <li><input type="checkbox" id="k14"><label for="k14"><span class="tag g">Graph</span>Studio 上状态为 Synced，GraphQL 查询返回了真实数据</label></li>
+    <li><input type="checkbox" id="k15"><label for="k15"><span class="tag g">Graph</span>能解释 RPC 直查与 Graph 索引查询的差异</label></li>
+    <li><input type="checkbox" id="k16"><label for="k16">仓库内无私钥、助记词、API Key、Deploy Key</label></li>
+    <li><input type="checkbox" id="k17"><label for="k17"><code>make check</code> 全绿</label></li>
+  </ul>
+  <p style="font-size:13px;color:var(--ink-3)">勾选状态仅保存在当前页面，刷新会清空——需要留存就直接打印这一页（⌘P）。</p>
+</section>
+
+<!-- ============ 7 ============ -->
+<section id="s7">
+  <h2><span class="num">7</span>踩坑速查表</h2>
+  <p class="sect-note">前六条是这个项目搭建时真实遇到并修掉的，不是假想。</p>
+
+  <table>
+    <thead><tr><th style="width:38%">现象</th><th>原因与解法</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>go install …/ignite@v29.8.0</code> 报 <code>module … found, but does not contain package</code></td>
+        <td>包路径错。真实入口是 <code>ignite/cmd/ignite</code>；但即使写对，Go 也会因该模块含 <code>replace</code> 指令拒绝 install。<strong>改用官方脚本或源码 <code>go build</code></strong>（见 1.2）。</td>
+      </tr>
+      <tr>
+        <td>Ignite 命令启动时报插件/apps 相关错误</td>
+        <td>本机 <code>~/.ignite</code> 里的旧插件被加载。用干净配置目录：<code>IGNT_CONFIG_DIR=/tmp/ignite-config ignite …</code></td>
+      </tr>
+      <tr>
+        <td><code>go mod tidy</code> 卡住十几分钟不动</td>
+        <td>Ignite 生成的 <code>go.mod</code> 里 <code>tool</code> 区块会把 buf、protoc 插件、lint 工具全拉一遍，与跑链无关。<strong>直接 <code>make build</code></strong>（只解析节点二进制真正需要的依赖）即可生成 <code>go.sum</code>。</td>
+      </tr>
+      <tr>
+        <td><code>go build</code> 报 <code>"fmt" imported and not used</code> 之类</td>
+        <td>scaffold 中途被打断留下的残留 import。删掉那几行再 <code>gofmt -w</code> 即可，不是逻辑问题。</td>
+      </tr>
+      <tr>
+        <td>Go 命令报缓存目录权限错误</td>
+        <td>换一个可写缓存目录：<code>GOCACHE=/tmp/bh-go-cache go test ./...</code></td>
+      </tr>
+      <tr>
+        <td><code>npm audit</code> 报 critical <code>decompress</code> Zip Slip</td>
+        <td>已通过 <code>subgraph/package.json</code> 的 <code>overrides</code> 换成 <code>@xhmikosr/decompress@11.1.3</code>。<strong>别用 <code>audit fix --force</code></strong>，它会把 Hardhat 升到 3。</td>
+      </tr>
+      <tr>
+        <td>部署成功但读不到任何日志</td>
+        <td>八成用了 <code>--network hardhat</code>（一次性内存链）。改成终端 A <code>npm run node</code> + 终端 B <code>deploy:local</code>。</td>
+      </tr>
+      <tr>
+        <td><code>Network sepolia doesn't exist</code></td>
+        <td><code>SEPOLIA_RPC_URL</code> 与 <code>DEPLOYER_PRIVATE_KEY</code> 必须<strong>同时</strong>存在才会注册该网络。检查 <code>.env</code> 位置与拼写。</td>
+      </tr>
+      <tr>
+        <td>读事件超时 / RPC 报 block range 超限</td>
+        <td><code>FROM_BLOCK</code> 没设，从创世块扫了。设成合约部署区块号。</td>
+      </tr>
+      <tr>
+        <td>Subgraph 一直 Syncing 且 0 条数据</td>
+        <td><code>subgraph.yaml</code> 的 <code>address</code> 还是全零，或 <code>startBlock</code> 晚于实际写入区块。改完重新 <code>codegen → build → deploy</code>。</td>
+      </tr>
+      <tr>
+        <td><code>graph deploy</code> 报找不到 subgraph</td>
+        <td>Studio 上的名字与 <code>--studio event-store</code> 不一致，或没先跑 <code>graph auth</code>。</td>
+      </tr>
+      <tr>
+        <td>Cosmos 转账返回 <code>account sequence mismatch</code></td>
+        <td>同一账户连发交易太快。等一个区块再发，或加 <code>--sequence</code> 指定。</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ 8 ============ -->
+<section id="s8">
+  <h2><span class="num">8</span>安全红线</h2>
+  <p class="sect-note">违反任意一条，作业分数事小，钱包被清空事大。</p>
+  <ul>
+    <li><strong>私钥 / 助记词 / API Key / Deploy Key 只存在于本地 <code>.env</code></strong>，该文件已在 <code>.gitignore</code> 中；提交前用 <code>git status</code> 确认它没被跟踪。</li>
+    <li><strong>测试网钱包与真实资产钱包完全隔离</strong>，两者不共用助记词。</li>
+    <li>作业报告和截图里<strong>只出现公开信息</strong>：地址、txhash、区块号、合约地址、浏览器链接。</li>
+    <li>Cosmos 侧只用 <code>--keyring-backend test</code>（明文存储，仅限本地学习），<strong>不要在这个 keyring 里放任何有价值的密钥</strong>。</li>
+    <li>没有链上证据（地址 + txhash + 区块号 + 浏览器链接）之前，<strong>报告里不能写"已部署"</strong>。</li>
+    <li>不要为了消除依赖告警执行破坏性升级；当前 critical 已处理，其余是开发工具链的已知噪音。</li>
+  </ul>
+</section>
+
+<!-- ============ 9 ============ -->
+<section id="s9">
+  <h2><span class="num">9</span>附录 · 结果记录表</h2>
+  <p class="sect-note">边做边填，写报告时直接抄。打印这一页（⌘P）当纸质记录也行。</p>
+
+  <h3>作业一 · Cosmos</h3>
+  <table>
+    <tbody>
+      <tr><td style="width:34%">alice 地址</td><td><span class="fill">edu1…</span></td></tr>
+      <tr><td>bob 地址</td><td><span class="fill">edu1…</span></td></tr>
+      <tr><td>validator operator</td><td><span class="fill">eduvaloper1…</span></td></tr>
+      <tr><td>转账 txhash</td><td><span class="fill"></span></td></tr>
+      <tr><td>转账前后 alice 余额</td><td><span class="fill"></span> → <span class="fill"></span></td></tr>
+      <tr><td>转账前后 bob 余额</td><td><span class="fill"></span> → <span class="fill"></span></td></tr>
+      <tr><td>委托 txhash / 数量</td><td><span class="fill"></span></td></tr>
+      <tr><td>查询到的 rewards</td><td><span class="fill"></span></td></tr>
+      <tr><td>观察到的最大区块高度</td><td><span class="fill"></span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>作业二 · EVM / The Graph</h3>
+  <table>
+    <tbody>
+      <tr><td style="width:34%">本地部署地址</td><td><span class="fill">0x…</span></td></tr>
+      <tr><td>Sepolia 合约地址</td><td><span class="fill">0x…</span></td></tr>
+      <tr><td>部署 txhash</td><td><span class="fill"></span></td></tr>
+      <tr><td>部署区块号 / startBlock</td><td><span class="fill"></span></td></tr>
+      <tr><td>Etherscan 链接</td><td><span class="fill"></span></td></tr>
+      <tr><td>写入 txhash / key / value</td><td><span class="fill"></span></td></tr>
+      <tr><td>Infura 读到的高度</td><td><span class="fill"></span></td></tr>
+      <tr><td>Alchemy 读到的高度</td><td><span class="fill"></span></td></tr>
+      <tr><td>Subgraph 名称 / 版本</td><td><span class="fill">event-store / v0.0.1</span></td></tr>
+      <tr><td>Studio Query URL</td><td><span class="fill"></span></td></tr>
+      <tr><td>GraphQL 返回条数</td><td><span class="fill"></span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>需要交付的截图</h3>
+  <ol>
+    <li>Cosmos 节点持续出块的终端画面（能看到 height 递增）</li>
+    <li>转账前后两次 <code>query bank balances</code> 的对比</li>
+    <li><code>query staking validator</code> 与 <code>query distribution rewards</code> 的输出</li>
+    <li><code>read:events</code> 三段输出（getLogs / queryFilter / Receipt）</li>
+    <li>Etherscan 上合约的 Events 标签页</li>
+    <li><code>compare:providers</code> 的双行输出</li>
+    <li>The Graph Studio 显示 Synced 的状态页</li>
+    <li>GraphQL Playground 的查询结果</li>
+    <li><code>make check</code> 全绿的终端输出</li>
+  </ol>
+</section>
+
+<footer>
+  施工手册 · 基于 <code>Leon4868/blockchain-homework</code> 实际代码编写 · 2026-08-16
+</footer>
+
+</main>
+</div>
+
+<script>
+// 复制按钮
+document.querySelectorAll('.code').forEach(function(box){
+  var btn = box.querySelector('.copy');
+  if(!btn) return;
+  btn.addEventListener('click', function(){
+    var code = box.querySelector('code');
+    var text = code ? code.innerText : '';
+    var done = function(){
+      btn.textContent = '已复制';
+      btn.classList.add('done');
+      setTimeout(function(){ btn.textContent = '复制'; btn.classList.remove('done'); }, 1400);
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done, function(){});
+    } else {
+      var ta = document.createElement('textarea');
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); done(); } catch(e){}
+      document.body.removeChild(ta);
+    }
+  });
+});
+
+// 目录高亮
+var links = Array.prototype.slice.call(document.querySelectorAll('nav.toc a'));
+var targets = links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+function sync(){
+  var pos = window.scrollY + 90, idx = 0;
+  targets.forEach(function(t, i){ if(t && t.offsetTop <= pos) idx = i; });
+  links.forEach(function(a, i){ a.classList.toggle('active', i === idx); });
+}
+window.addEventListener('scroll', sync, {passive:true});
+sync();
+</script>
+</body>
+</html>
