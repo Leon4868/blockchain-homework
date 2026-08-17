@@ -1,5 +1,13 @@
 import { formatAmount } from "../lib/api";
 
+/** 版本形如 "main-<40位commit>"，完整展示会撑破卡片，这里只留短哈希。 */
+function formatVersion(version) {
+  if (!version) return undefined;
+  const [branch, commit] = version.split("-");
+  if (!commit) return `edud ${version}`;
+  return `edud ${branch}-${commit.slice(0, 7)}`;
+}
+
 function Stat({ label, value, hint }) {
   return (
     <div className="stat">
@@ -32,7 +40,7 @@ export function ChainStatus({ block, nodeInfo, pool, blockTime, error }) {
         <Stat
           label="节点"
           value={nodeInfo?.default_node_info?.moniker || "-"}
-          hint={nodeInfo?.application_version?.version ? `edud ${nodeInfo.application_version.version}` : undefined}
+          hint={formatVersion(nodeInfo?.application_version?.version)}
         />
         <Stat
           label="已质押"
