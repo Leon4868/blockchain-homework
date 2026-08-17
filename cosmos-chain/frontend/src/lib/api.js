@@ -19,20 +19,32 @@ async function get(path) {
   return response.json();
 }
 
-/** uedu -> 1.234567 EDU，保留原始精度不做四舍五入。 */
+/**
+ * uedu -> 1.234567 EDU，保留原始精度不做四舍五入。
+ * 质押奖励是 DecCoin，金额可能带小数且不足 1 uedu（例如刚委托后的 "0.0317…uedu"）。
+ * 这类值换算成 EDU 会显示成 0，反而看不出奖励在累积，因此直接用最小单位展示。
+ */
 export function formatAmount(amount, denom = DENOM) {
   if (denom !== DENOM) return `${amount} ${denom}`;
+  const [intPart, fracPart = ""] = String(amount).split(".");
   const base = 10n ** BigInt(DECIMALS);
-  const raw = BigInt(amount);
+  const raw = BigInt(intPart);
   const whole = raw / base;
   const frac = (raw % base).toString().padStart(DECIMALS, "0").replace(/0+$/, "");
+
+  if (whole === 0n && !frac) {
+    const hasFraction = /[1-9]/.test(fracPart);
+    if (raw === 0n && !hasFraction) return `0 ${DISPLAY_DENOM}`;
+    return `${Number(`${intPart}.${fracPart}`).toPrecision(3)} ${DENOM}`;
+  }
+
   const wholeText = whole.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   return `${wholeText}${frac ? `.${frac}` : ""} ${DISPLAY_DENOM}`;
 }
 
 export function formatCoins(coins) {
   if (!coins?.length) return "0";
-  return coins.map((coin) => formatAmount(coin.amount.split(".")[0], coin.denom)).join(" + ");
+  return coins.map((coin) => formatAmount(coin.amount, coin.denom)).join(" + ");
 }
 
 export const api = {
