@@ -41,8 +41,23 @@ npm run node
 npm run deploy:local
 ```
 
-记录输出的合约地址，将它写入 `.env` 的 `EVENT_STORE_ADDRESS`。不要改用一次性的
+记录输出的合约地址，将它写入 `.env` 的 `LOCAL_EVENT_STORE_ADDRESS`。不要改用一次性的
 `--network hardhat` 后再从另一个进程读取，因为该临时链会随部署进程结束而消失。
+
+### 本地与 Sepolia 的变量是分开的
+
+合约地址、起始区块和 RPC 在两个网络上都不同，因此按网络拆成独立变量，由
+[scripts/lib/network.js](scripts/lib/network.js) 统一解析：
+
+| 用途 | 本地 | Sepolia |
+| --- | --- | --- |
+| RPC | `LOCAL_RPC_URL` | `SEPOLIA_RPC_URL` |
+| 合约地址 | `LOCAL_EVENT_STORE_ADDRESS` | `SEPOLIA_EVENT_STORE_ADDRESS` |
+| 起始区块 | `LOCAL_FROM_BLOCK` | `SEPOLIA_FROM_BLOCK` |
+
+Hardhat 脚本按 `--network` 自动选择；纯 node 脚本（`read:rpc` / `read:events`）
+默认读本地，加 `NETWORK=sepolia` 或用 `:sepolia` 后缀的 npm 脚本切换。
+`RPC_URL` 仍可作为一次性覆盖，优先级最高。
 
 ## 3. ethers.js 读取普通 RPC
 
@@ -75,11 +90,18 @@ DataWritten(
 )
 ```
 
-在 `.env` 配置 `EVENT_STORE_ADDRESS`、`DATA_KEY`、`DATA_VALUE` 后执行：
+在 `.env` 配置 `LOCAL_EVENT_STORE_ADDRESS`、`DATA_KEY`、`DATA_VALUE` 后执行：
 
 ```bash
 npm run write:local
 npm run read:events
+```
+
+对应的 Sepolia 版本：
+
+```bash
+npm run write:sepolia
+npm run read:events:sepolia
 ```
 
 读取脚本展示三种方式：
@@ -88,7 +110,8 @@ npm run read:events
 2. `contract.queryFilter`：ethers.js 合约事件封装；
 3. `getTransactionReceipt`：从事件所属交易的 Receipt 查看日志。
 
-建议把 `FROM_BLOCK` 设置成合约部署区块，避免从创世块扫描。
+建议把 `LOCAL_FROM_BLOCK` / `SEPOLIA_FROM_BLOCK` 设置成对应网络的合约部署区块，
+避免从创世块扫描 —— 在 Sepolia 上从 0 扫会非常慢，且多数 provider 会直接拒绝。
 
 ## 5. Sepolia
 

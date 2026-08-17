@@ -16,7 +16,9 @@
     "read:events": "node scripts/read-events.js",
     "graph:install": "npm install --prefix subgraph",
     "graph:codegen": "npm run codegen --prefix subgraph",
-    "graph:build": "npm run build --prefix subgraph"
+    "graph:build": "npm run build --prefix subgraph",
+    "read:rpc:sepolia": "NETWORK=sepolia node scripts/read-rpc.js",
+    "read:events:sepolia": "NETWORK=sepolia node scripts/read-events.js"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.6",

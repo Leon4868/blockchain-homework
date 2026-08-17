@@ -1,12 +1,15 @@
-require("dotenv").config();
 const { ethers } = require("ethers");
+const { resolveNetwork } = require("./lib/network");
 
 async function main() {
-  const url = process.env.RPC_URL || process.env.SEPOLIA_RPC_URL || "http://127.0.0.1:8545";
-  const provider = new ethers.JsonRpcProvider(url);
+  const { network, rpcUrl } = resolveNetwork();
+  if (!rpcUrl) throw new Error(`网络 ${network} 缺少 RPC 地址`);
+
+  const provider = new ethers.JsonRpcProvider(rpcUrl);
   const blockNumber = await provider.getBlockNumber();
   const block = await provider.getBlock(blockNumber);
   console.log({
+    network,
     chainId: (await provider.getNetwork()).chainId.toString(),
     blockNumber,
     blockHash: block.hash,

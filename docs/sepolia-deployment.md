@@ -112,8 +112,10 @@ source:
 
 ```bash
 cd evm-event-lab
-node scripts/read-events.js        # 需要 .env 中的 SEPOLIA_RPC_URL
-node scripts/compare-providers.js  # 需要 INFURA_ / ALCHEMY_ 两个 URL
+npm run read:events:sepolia        # 需要 SEPOLIA_RPC_URL + SEPOLIA_EVENT_STORE_ADDRESS
+npm run compare:providers          # 需要 INFURA_ / ALCHEMY_ 两个 URL
 ```
+
+本地流程用不带后缀的 `npm run read:events`，两者读各自网络的变量，互不干扰。
 
 `.env` 已被 `.gitignore` 排除，仓库中不含任何凭证。

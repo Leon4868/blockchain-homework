@@ -153,7 +153,7 @@ npm run node
 npm run deploy:local
 ```
 
-然后将部署地址写入本地 `.env` 的 `EVENT_STORE_ADDRESS`，执行事件写入和读取：
+然后将部署地址写入本地 `.env` 的 `LOCAL_EVENT_STORE_ADDRESS`，执行事件写入和读取：
 
 ```bash
 npm run write:local
