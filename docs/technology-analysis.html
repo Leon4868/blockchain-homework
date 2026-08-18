@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Blockchain Homework Lab 技术栈、技术名词、学习目标与两个作业目的分析。" />
+  <title>Blockchain Homework Lab · 技术与作业目的分析</title>
+  <style>
+    :root {
+      --bg: #f4f6fb;
+      --surface: #ffffff;
+      --surface-soft: #f8faff;
+      --ink: #172033;
+      --muted: #5e6a7d;
+      --line: #dfe5ef;
+      --cosmos: #7653d6;
+      --cosmos-soft: #f0ebff;
+      --evm: #0879c9;
+      --evm-soft: #eaf6ff;
+      --graph: #6747ed;
+      --green: #18865b;
+      --green-soft: #e9f8f0;
+      --orange: #ae6410;
+      --orange-soft: #fff4e3;
+      --code: #172033;
+      --shadow: 0 12px 32px rgba(28, 43, 76, 0.08);
+      --radius: 16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--bg);
+      font: 15px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: #4c43bd; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code {
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: #eef1f6;
+      color: #27344a;
+      font: 0.9em var(--mono);
+    }
+    pre {
+      overflow-x: auto;
+      margin: 0;
+      padding: 16px 18px;
+      border-radius: 12px;
+      background: var(--code);
+      color: #e8eef9;
+      font: 13px/1.7 var(--mono);
+    }
+
+    .shell { max-width: 1240px; margin: 0 auto; padding: 28px 22px 70px; }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 44px 46px;
+      border-radius: 24px;
+      color: #fff;
+      background:
+        radial-gradient(circle at 84% 20%, rgba(88, 173, 255, .27), transparent 26%),
+        radial-gradient(circle at 18% 90%, rgba(150, 92, 255, .3), transparent 28%),
+        linear-gradient(135deg, #151a4b, #202d76 56%, #0a638f);
+      box-shadow: var(--shadow);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -80px;
+      bottom: -120px;
+      width: 300px;
+      height: 300px;
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: 50%;
+      box-shadow: 0 0 0 24px rgba(255,255,255,.04), 0 0 0 48px rgba(255,255,255,.03);
+    }
+    .eyebrow { margin: 0 0 8px; color: #a9dcff; font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { max-width: 780px; margin: 0; font-size: clamp(30px, 5vw, 52px); line-height: 1.15; letter-spacing: -.04em; }
+    .hero p { max-width: 720px; margin: 18px 0 0; color: #e4edff; font-size: 17px; }
+    .hero-links { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 9px; margin-top: 24px; }
+    .hero-links a { padding: 6px 12px; border: 1px solid rgba(255,255,255,.28); border-radius: 999px; color: #fff; background: rgba(255,255,255,.1); font-size: 13px; }
+
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 18px 0; }
+    .stat, .panel, .track, .term-card { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); }
+    .stat { padding: 18px 20px; }
+    .stat strong { display: block; font-size: 25px; line-height: 1.2; }
+    .stat span { color: var(--muted); font-size: 13px; }
+
+    .panel { margin-top: 18px; padding: 28px; }
+    .section-title { display: flex; align-items: center; gap: 12px; margin: 0 0 6px; font-size: 25px; line-height: 1.35; letter-spacing: -.025em; }
+    .section-title .number { display: inline-flex; align-items: center; justify-content: center; width: 31px; height: 31px; border-radius: 10px; color: #fff; background: var(--graph); font-size: 14px; }
+    .section-lead { margin: 0 0 22px; color: var(--muted); }
+    .sub-title { margin: 24px 0 10px; font-size: 18px; }
+
+    .tracks { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .track { overflow: hidden; box-shadow: none; }
+    .track-head { padding: 18px 20px; color: #fff; }
+    .track-head.cosmos { background: linear-gradient(135deg, #5132a7, #815be4); }
+    .track-head.evm { background: linear-gradient(135deg, #075b9b, #0aa4d4); }
+    .track-head h3 { margin: 0; font-size: 20px; }
+    .track-head p { margin: 3px 0 0; opacity: .88; font-size: 13px; }
+    .track-body { padding: 20px; }
+    .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin: 0; }
+    .flow span { padding: 7px 10px; border-radius: 8px; background: var(--surface-soft); border: 1px solid var(--line); font-size: 12.5px; }
+    .flow i { color: #8d98aa; font-style: normal; }
+    .flow.cosmos span { border-color: #ddd2ff; background: var(--cosmos-soft); }
+    .flow.evm span { border-color: #ccecff; background: var(--evm-soft); }
+    .callout { margin-top: 17px; padding: 11px 14px; border-left: 3px solid var(--orange); border-radius: 0 9px 9px 0; color: #69410c; background: var(--orange-soft); font-size: 13px; }
+
+    table { width: 100%; border-collapse: collapse; margin: 12px 0 2px; font-size: 13.5px; }
+    th, td { padding: 11px 12px; border-bottom: 1px solid var(--line); vertical-align: top; text-align: left; }
+    th { color: var(--muted); background: #fafbfe; font-size: 12px; letter-spacing: .04em; }
+    tr:last-child td { border-bottom: 0; }
+    .tag { display: inline-block; padding: 2px 7px; border-radius: 999px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .tag.cosmos { color: var(--cosmos); background: var(--cosmos-soft); }
+    .tag.evm { color: var(--evm); background: var(--evm-soft); }
+    .tag.graph { color: var(--graph); background: #efedff; }
+    .tag.common { color: var(--green); background: var(--green-soft); }
+
+    .term-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 13px; }
+    .term-card { padding: 16px 18px; box-shadow: none; }
+    .term-card h3 { margin: 0 0 4px; font-size: 16px; }
+    .term-card p { margin: 0; color: var(--muted); font-size: 13.5px; }
+    .term-card strong { color: var(--ink); }
+
+    .purpose-grid, .learn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .purpose { padding: 22px; border-radius: 14px; }
+    .purpose.cosmos { border: 1px solid #ddd2ff; background: var(--cosmos-soft); }
+    .purpose.evm { border: 1px solid #ccecff; background: var(--evm-soft); }
+    .purpose h3 { margin: 0 0 7px; font-size: 20px; }
+    .purpose p { margin: 0; color: #435069; }
+    .purpose ul, .learn-grid ul { margin: 13px 0 0; padding-left: 20px; }
+
+    .learn-item { padding: 18px 20px; border: 1px solid var(--line); border-radius: 13px; background: var(--surface-soft); }
+    .learn-item h3 { margin: 0 0 5px; font-size: 17px; }
+    .learn-item p { margin: 0; color: var(--muted); font-size: 13.5px; }
+
+    .sequence { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 16px; }
+    .step { position: relative; min-height: 98px; padding: 14px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-soft); }
+    .step b { display: block; margin-bottom: 6px; color: var(--graph); font-size: 13px; }
+    .step span { color: var(--muted); font-size: 12.5px; }
+    .step:not(:last-child)::after { content: "→"; position: absolute; top: 34px; right: -15px; color: #8691a5; font-size: 18px; z-index: 2; }
+
+    .security { border: 1px solid #f0d2a5; background: var(--orange-soft); }
+    .security ul { margin-bottom: 0; }
+    footer { padding: 28px 0 0; color: var(--muted); text-align: center; font-size: 13px; }
+
+    @media (max-width: 900px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .sequence { grid-template-columns: repeat(2, 1fr); }
+      .step:not(:last-child)::after { display: none; }
+    }
+    @media (max-width: 700px) {
+      .shell { padding: 14px 12px 44px; }
+      .hero { padding: 30px 24px; border-radius: 18px; }
+      .hero p { font-size: 15px; }
+      .stats, .tracks, .term-grid, .purpose-grid, .learn-grid, .sequence { grid-template-columns: 1fr; }
+      .panel { padding: 20px 16px; border-radius: 13px; }
+      table { display: block; overflow-x: auto; white-space: nowrap; }
+      td { white-space: normal; min-width: 170px; }
+    }
+    @media print {
+      body { background: #fff; }
+      .shell { max-width: none; padding: 0; }
+      .hero, .stat, .panel, .track, .term-card { box-shadow: none; }
+      .panel, .track, .term-card { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="hero">
+      <p class="eyebrow">Blockchain Homework Lab · Technology Analysis</p>
+      <h1>两条作业，学习一条完整的 Web3 数据链路</h1>
+      <p>作业 1 让你理解“链是怎么运行的”；作业 2 让你理解“链上数据如何被应用读取、索引和展示”。</p>
+      <nav class="hero-links" aria-label="页面导航">
+        <a href="#overview">总览</a>
+        <a href="#cosmos">Cosmos 作业</a>
+        <a href="#evm">EVM 作业</a>
+        <a href="#terms">技术名词</a>
+        <a href="#learning">学习收获</a>
+        <a href="#purpose">作业目的</a>
+      </nav>
+    </header>
+
+    <section class="stats" aria-label="项目概况">
+      <div class="stat"><strong>2 条</strong><span>独立实验线</span></div>
+      <div class="stat"><strong>3 种</strong><span>EVM 日志读取方式</span></div>
+      <div class="stat"><strong>2 个</strong><span>React 数据应用</span></div>
+      <div class="stat"><strong>1 条</strong><span>端到端 Web3 学习路径</span></div>
+    </section>
+
+    <main>
+      <section class="panel" id="overview">
+        <h2 class="section-title"><span class="number">00</span>先看结论</h2>
+        <p class="section-lead">这不是两个互不相关的 Demo，而是分别覆盖了区块链系统的两个方向。</p>
+        <div class="tracks">
+          <article class="track">
+            <div class="track-head cosmos">
+              <h3>🪐 作业 1 · Cosmos 应用链</h3>
+              <p>关注链的内部：账户、状态、交易、共识和奖励</p>
+            </div>
+            <div class="track-body">
+              <div class="flow cosmos">
+                <span>Genesis</span><i>→</i><span>账户 / 余额</span><i>→</i><span>Bank 转账</span><i>→</i><span>区块共识</span><i>→</i><span>Validator / Reward</span>
+              </div>
+              <div class="callout">“挖矿”在本项目中准确说是 PoS 出块、质押、委托与奖励，不是 PoW 算力挖矿。</div>
+            </div>
+          </article>
+          <article class="track">
+            <div class="track-head evm">
+              <h3>⟠ 作业 2 · EVM 数据读取</h3>
+              <p>关注链的外部：合约、日志、RPC、索引和前端</p>
+            </div>
+            <div class="track-body">
+              <div class="flow evm">
+                <span>EventStore.sol</span><i>→</i><span>DataWritten</span><i>→</i><span>RPC / ethers.js</span><i>→</i><span>The Graph</span><i>→</i><span>GraphQL / React</span>
+              </div>
+              <div class="callout">EventStore 专门通过事件日志写入数据，用来理解“原始读取”和“索引读取”的差异。</div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel" id="cosmos">
+        <h2 class="section-title"><span class="number" style="background:var(--cosmos)">01</span>作业 1：Cosmos 技术分析</h2>
+        <p class="section-lead">目标是从“会调用钱包”进阶到“能说明一条应用链如何运行”。</p>
+
+        <h3 class="sub-title">核心流程</h3>
+        <pre>config.yml
+    ↓
+Genesis 初始状态：alice / bob / validator + uedu
+    ↓
+edud 节点 + CometBFT PoS
+    ↓
+账户余额查询 → Bank 转账 → 区块确认
+    ↓
+Validator 出块 → Delegation 委托 → Reward 奖励
+    ↓
+Cosmos REST API :1317 → React 链浏览器 :5174</pre>
+
+        <h3 class="sub-title">技术栈、作用与学习点</h3>
+        <table>
+          <thead><tr><th>技术 / 名词</th><th>它是什么</th><th>在项目中的作用</th><th>你应该掌握什么</th></tr></thead>
+          <tbody>
+            <tr><td><span class="tag cosmos">Go</span></td><td>静态类型编程语言</td><td>编译 <code>edud</code> 节点和 Cosmos 应用</td><td>后端工程、模块装配、编译和测试</td></tr>
+            <tr><td><span class="tag cosmos">Cosmos SDK</span></td><td>应用链开发框架</td><td>提供 Auth、Bank、Staking、Distribution 等模块</td><td>如何组装自己的链，而不是只使用现成公链</td></tr>
+            <tr><td><span class="tag cosmos">CometBFT</span></td><td>共识与区块传播引擎</td><td>负责节点通信、交易排序、区块和 PoS 共识</td><td>共识层与应用状态机如何分工</td></tr>
+            <tr><td><span class="tag cosmos">ABCI</span></td><td>应用与共识引擎之间的接口</td><td>连接 Cosmos SDK 应用和 CometBFT</td><td>区块链执行层和共识层的边界</td></tr>
+            <tr><td><span class="tag cosmos">Ignite CLI</span></td><td>Cosmos 开发脚手架</td><td>初始化、启动和管理本地链</td><td>如何快速搭建可运行的应用链</td></tr>
+            <tr><td><span class="tag cosmos">Genesis</span></td><td>链的创世状态</td><td>定义 Chain ID、账户和初始代币分配</td><td>区块链如何从第一状态开始</td></tr>
+            <tr><td><span class="tag cosmos">Keyring</span></td><td>本地钱包密钥管理</td><td>保存 alice、bob、validator 的本地账户</td><td>地址、私钥、签名和交易授权的关系</td></tr>
+            <tr><td><span class="tag cosmos">Bank Module</span></td><td>账户资产转账模块</td><td>执行 Alice → Bob 的 Bank 转账</td><td>交易如何改变链上余额</td></tr>
+            <tr><td><span class="tag cosmos">Staking / Distribution</span></td><td>质押和奖励模块</td><td>Validator、Delegation 和 Reward 查询</td><td>PoS 网络中验证者和委托人的经济关系</td></tr>
+            <tr><td><span class="tag common">REST API</span></td><td>基于 HTTP 的应用查询接口</td><td>为链浏览器提供区块、余额、验证者和交易</td><td>前端如何消费区块链数据</td></tr>
+            <tr><td><span class="tag common">React + Vite</span></td><td>前端 UI 与构建工具</td><td>实现只读的 edu 链浏览器</td><td>轮询节点 API，并把链上数据可视化</td></tr>
+          </tbody>
+        </table>
+
+        <h3 class="sub-title">必须分清的四个名字</h3>
+        <table>
+          <thead><tr><th>名称</th><th>含义</th><th>示例 / 记忆方式</th></tr></thead>
+          <tbody>
+            <tr><td><code>edu</code></td><td>链名 / Chain ID</td><td>告诉节点“你正在运行哪条链”</td></tr>
+            <tr><td><code>edud</code></td><td>节点命令行程序</td><td>用它 init、start、query、tx</td></tr>
+            <tr><td><code>edu1...</code></td><td>普通账户地址前缀</td><td>用于余额和转账</td></tr>
+            <tr><td><code>eduvaloper1...</code></td><td>验证者操作地址</td><td>用于委托 Validator，不等于普通账户地址</td></tr>
+            <tr><td><code>uedu</code></td><td>最小代币单位</td><td>类似 EVM 里的 wei；页面可显示为 EDU</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="panel" id="evm">
+        <h2 class="section-title"><span class="number" style="background:var(--evm)">02</span>作业 2：EVM 技术分析</h2>
+        <p class="section-lead">目标是理解从合约写入到前端查询的完整数据路径。</p>
+
+        <h3 class="sub-title">核心流程</h3>
+        <pre>EventStore.writeData(key, value)
+    ↓
+Ethereum Transaction 执行
+    ↓
+DataWritten Event Log + Transaction Receipt
+    ├── provider.getLogs —— 原始 JSON-RPC
+    ├── contract.queryFilter —— ethers.js 封装
+    └── The Graph mapping —— Subgraph Entity —— GraphQL
+    ↓
+React + ethers.js + MetaMask EventStore 控制台 :5173</pre>
+
+        <h3 class="sub-title">技术栈、作用与学习点</h3>
+        <table>
+          <thead><tr><th>技术 / 名词</th><th>它是什么</th><th>在项目中的作用</th><th>你应该掌握什么</th></tr></thead>
+          <tbody>
+            <tr><td><span class="tag evm">Solidity</span></td><td>EVM 智能合约语言</td><td>编写 <code>EventStore.sol</code></td><td>函数、事件、输入校验、Gas 和合约边界</td></tr>
+            <tr><td><span class="tag evm">EVM</span></td><td>执行智能合约的虚拟机</td><td>运行 Solidity 字节码</td><td>合约不是普通后端程序，而是在链上确定性执行</td></tr>
+            <tr><td><span class="tag evm">Hardhat</span></td><td>EVM 开发框架</td><td>本地节点、编译、测试和部署</td><td>智能合约开发的完整工程闭环</td></tr>
+            <tr><td><span class="tag evm">ethers.js v6</span></td><td>JavaScript 区块链 SDK</td><td>创建 Provider、Contract、Signer 并读取事件</td><td>前端和脚本如何访问 EVM</td></tr>
+            <tr><td><span class="tag common">JSON-RPC</span></td><td>节点的标准请求协议</td><td>查询 Chain ID、区块、交易和日志</td><td>区块链节点 API 的底层工作方式</td></tr>
+            <tr><td><span class="tag common">Provider</span></td><td>只读连接对象</td><td>查询区块、余额和事件</td><td>读取权限和写入权限的区别</td></tr>
+            <tr><td><span class="tag common">Signer</span></td><td>交易签名对象</td><td>通过 MetaMask 签名写入交易</td><td>钱包如何授权一笔链上交易</td></tr>
+            <tr><td><span class="tag common">Receipt</span></td><td>交易执行回执</td><td>读取交易状态、Gas 和 Event Log</td><td>如何判断交易真的上链成功</td></tr>
+            <tr><td><span class="tag evm">Infura / Alchemy</span></td><td>托管 RPC 服务商</td><td>访问 Sepolia 节点并比较读取结果</td><td>公共 RPC、自建节点和服务商节点的区别</td></tr>
+            <tr><td><span class="tag evm">Sepolia</span></td><td>Ethereum 测试网</td><td>部署并验证测试合约</td><td>从本地开发到测试网部署的边界</td></tr>
+            <tr><td><span class="tag graph">The Graph</span></td><td>区块链数据索引协议</td><td>把 Event Log 转成可查询实体</td><td>为什么 DApp 需要链下索引层</td></tr>
+            <tr><td><span class="tag graph">Subgraph</span></td><td>The Graph 的索引项目</td><td>定义网络、ABI、Schema 和 Mapping</td><td>如何为链上事件建立查询模型</td></tr>
+            <tr><td><span class="tag graph">GraphQL</span></td><td>按字段查询数据的 API 语言</td><td>查询 <code>dataWrittens</code> 实体</td><td>排序、过滤、分页和前端数据读取</td></tr>
+            <tr><td><span class="tag common">React + MetaMask</span></td><td>DApp 前端与浏览器钱包</td><td>连接账户、签名写入、展示三种读取结果</td><td>钱包连接、Signer、网络切换与事件监听</td></tr>
+          </tbody>
+        </table>
+
+        <h3 class="sub-title">Storage、Event、Receipt 的区别</h3>
+        <table>
+          <thead><tr><th>概念</th><th>存放 / 产生位置</th><th>适合做什么</th><th>注意点</th></tr></thead>
+          <tbody>
+            <tr><td>Storage</td><td>合约持久化状态</td><td>保存合约后续还要读取和修改的数据</td><td>读写成本较高，属于合约状态</td></tr>
+            <tr><td>Event Log</td><td>交易执行时产生的日志</td><td>给前端、索引器和区块浏览器读取</td><td>合约不能像读取 storage 一样读取历史事件</td></tr>
+            <tr><td>Transaction Receipt</td><td>交易执行后的回执</td><td>验证成功、Gas、区块和日志</td><td>通常通过交易哈希查询</td></tr>
+          </tbody>
+        </table>
+        <div class="callout">EventStore 只发出 <code>DataWritten</code> 事件，不保存业务 storage。它是为了专门训练“链上写入 → 链下读取 → 索引查询”的数据链路。</div>
+      </section>
+
+      <section class="panel" id="terms">
+        <h2 class="section-title"><span class="number" style="background:var(--graph)">03</span>跨两条作业的技术名词</h2>
+        <p class="section-lead">这些词不属于某一条链，但决定你能不能看懂 Web3 的完整系统。</p>
+        <div class="term-grid">
+          <article class="term-card"><h3>区块 Block</h3><p>一批按顺序确认的交易集合。<strong>作用：</strong>提供时间顺序和共识确认单位。</p></article>
+          <article class="term-card"><h3>交易 Transaction</h3><p>用户请求链执行某个动作。<strong>作用：</strong>改变余额、质押状态或调用合约。</p></article>
+          <article class="term-card"><h3>状态 State</h3><p>链当前保存的账户、余额和模块数据。<strong>作用：</strong>交易执行前后进行状态转换。</p></article>
+          <article class="term-card"><h3>节点 Node</h3><p>运行链软件并对外提供接口的进程。<strong>作用：</strong>接收交易、同步区块、提供查询。</p></article>
+          <article class="term-card"><h3>RPC</h3><p>程序访问节点的协议。<strong>作用：</strong>让脚本和前端读取区块链，而不是人工操作节点。</p></article>
+          <article class="term-card"><h3>索引 Index</h3><p>把原始事件整理成更适合查询的数据结构。<strong>作用：</strong>提高历史数据搜索、过滤和分页体验。</p></article>
+          <article class="term-card"><h3>链上 / 链下</h3><p>链上是共识确认的数据；链下是前端、RPC 服务和索引数据库。<strong>作用：</strong>理解可信边界与系统分工。</p></article>
+          <article class="term-card"><h3>本地链 / 测试网</h3><p>本地链用于快速开发，测试网用于接近真实网络的验证。<strong>作用：</strong>控制成本、风险和部署阶段。</p></article>
+        </div>
+      </section>
+
+      <section class="panel" id="learning">
+        <h2 class="section-title"><span class="number" style="background:var(--green)">04</span>你能从项目中学到什么</h2>
+        <p class="section-lead">建议把学习成果分成六层，每一层都对应可以实际验收的能力。</p>
+        <div class="learn-grid">
+          <article class="learn-item"><h3>1. 区块链底层</h3><p>理解账户、余额、交易、区块、状态、共识和节点，而不是只会连接钱包。</p></article>
+          <article class="learn-item"><h3>2. Cosmos 应用链</h3><p>能运行自己的链，解释 Genesis、Bank、Validator、Delegation 和 Reward 的关系。</p></article>
+          <article class="learn-item"><h3>3. 智能合约</h3><p>能用 Solidity 编写、测试和部署合约，理解函数、事件、Storage、Gas 与权限。</p></article>
+          <article class="learn-item"><h3>4. 链上数据读取</h3><p>会从 JSON-RPC、ethers.js Provider、Receipt 和 Event Log 中读取可复核数据。</p></article>
+          <article class="learn-item"><h3>5. 索引与 DApp</h3><p>会写 Subgraph Schema / Mapping，通过 GraphQL 和 React 展示历史链上数据。</p></article>
+          <article class="learn-item"><h3>6. 工程与安全</h3><p>会区分本地链、测试网和生产网络，保护私钥与 API Key，并用测试和部署证据验收。</p></article>
+        </div>
+      </section>
+
+      <section class="panel" id="purpose">
+        <h2 class="section-title"><span class="number" style="background:var(--orange)">05</span>两个作业的目的</h2>
+        <p class="section-lead">两个作业并列存在，是因为它们训练的是不同层次的能力。</p>
+        <div class="purpose-grid">
+          <article class="purpose cosmos">
+            <h3>作业 1：回答“链怎么运行”</h3>
+            <p>它更接近区块链基础设施和协议层。</p>
+            <ul>
+              <li>从零初始化链的创世状态；</li>
+              <li>理解账户和余额如何被链维护；</li>
+              <li>观察交易如何进入区块并改变状态；</li>
+              <li>理解 PoS 验证者、委托人和奖励；</li>
+              <li>通过 REST API 和浏览器验证结果。</li>
+            </ul>
+          </article>
+          <article class="purpose evm">
+            <h3>作业 2：回答“数据怎么被使用”</h3>
+            <p>它更接近智能合约、数据服务和 DApp 开发。</p>
+            <ul>
+              <li>编写合约并产生可查询事件；</li>
+              <li>比较原始 RPC、ethers.js 和 The Graph；</li>
+              <li>理解 Provider、Signer、MetaMask 和 Receipt；</li>
+              <li>用 Subgraph 把事件转换成查询实体；</li>
+              <li>让 React 前端消费同一批链上数据。</li>
+            </ul>
+          </article>
+        </div>
+
+        <h3 class="sub-title">完整学习闭环</h3>
+        <div class="sequence" aria-label="Web3 学习闭环">
+          <div class="step"><b>01 · 启动</b><span>运行 Cosmos 应用链或本地 EVM 节点</span></div>
+          <div class="step"><b>02 · 写入</b><span>发送 Bank 交易或调用 Solidity 合约</span></div>
+          <div class="step"><b>03 · 确认</b><span>区块、共识、Receipt 和 Event Log</span></div>
+          <div class="step"><b>04 · 读取</b><span>REST、RPC、ethers.js、GraphQL</span></div>
+          <div class="step"><b>05 · 展示</b><span>React 链浏览器和 EventStore 控制台</span></div>
+        </div>
+      </section>
+
+      <section class="panel" id="next">
+        <h2 class="section-title"><span class="number">06</span>建议学习顺序</h2>
+        <ol>
+          <li>先启动 Cosmos 链，查询区块高度、三个账户和余额。</li>
+          <li>完成一笔 Bank 转账，前后对比 Alice 和 Bob 的余额。</li>
+          <li>创建 Validator，完成 Delegation，并观察 Reward。</li>
+          <li>启动 Hardhat 节点，部署 EventStore 并写入一条事件。</li>
+          <li>分别使用 <code>getLogs</code>、<code>queryFilter</code> 和 Receipt 读取同一条数据。</li>
+          <li>部署到 Sepolia，用 Infura 和 Alchemy 读取同一合约。</li>
+          <li>配置 Subgraph，通过 GraphQL 查询，再让 React 控制台展示。</li>
+        </ol>
+        <p>每一步都要回答四个问题：<strong>谁发起？数据写在哪里？谁确认？如何验证？</strong></p>
+      </section>
+
+      <section class="panel security" id="security">
+        <h2 class="section-title"><span class="number" style="background:var(--orange)">07</span>安全边界</h2>
+        <ul>
+          <li>私钥、助记词、API Key 和完整 RPC 密钥 URL 不进入仓库。</li>
+          <li>测试网钱包与真实资产钱包完全隔离。</li>
+          <li>EVM 写交易由 MetaMask 签名，Cosmos 浏览器保持只读。</li>
+          <li><code>VITE_*</code> 变量会进入前端构建产物，不应放真正的秘密。</li>
+          <li>RPC 读取结果、Subgraph 索引结果和真实部署结果要分别验证。</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer>
+      <a href="../README.md">返回项目 README</a> ·
+      <a href="../docs/architecture.md">查看总体架构</a> ·
+      Blockchain Homework Lab
+    </footer>
+  </div>
+</body>
+</html>

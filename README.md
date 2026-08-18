@@ -411,6 +411,14 @@ make check
 
 <br />
 
+## 🖼️ 详细流程图
+
+根据当前项目的 Cosmos 链浏览器、EVM 控制台、Sepolia 和 The Graph Studio 实现，完整流程如下：
+
+![Blockchain Homework Lab 详细流程图](docs/images/blockchain-homework-flow-v2.png)
+
+<br />
+
 ## 📁 目录结构
 
 ```text
@@ -445,6 +453,7 @@ blockchain-homework/
 | [需求说明](docs/requirements.md) | 两条线的功能要求与技术基线 |
 | [总体架构](docs/architecture.md) | 模块划分与数据流 |
 | [验收标准](docs/acceptance.md) | 逐项检查清单 |
+| [技术与作业目的分析](docs/technology-analysis.html) | 技术名词、作用、学习收获与作业目的 |
 | [Sepolia 部署记录](docs/sepolia-deployment.md) | 可复核的链上证据 |
 | [变更记录](docs/CHANGELOG-2026-08-12.md) | 历史变更 |
 
